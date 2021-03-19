@@ -3,11 +3,21 @@ import numpy.random as r
 
 
 
-class SubPopulationSim(W, H, Pdeath, Precovery, Preinfiction, Ptravel, Pquarantine, cityname):
-	self.W = W
-	self.H = H
-	self.Pdeath = Pdeath
-	self.Precovery = Precovery
+
+class SubPopulationSim:
+	def __init__(self, Width, Height, Pdeath, Pinfection, Precovery, Preinfection, Ptravel, Pquarantine, cityname):
+		self.Width = Width
+		self.Height = Height
+		self.Pdeath = Pdeath
+		self.Pinfection = Pinfection
+		self.Precovery = Precovery
+		self.Preinfection = Preinfection
+		self.Ptravel = Ptravel
+		self.Pquarantine = Pquarantine
+		self.cityname = cityname
+		self.day = 0
+		self.state = np.zeros([Width, Height], int)
+
     
     
     
@@ -42,10 +52,24 @@ class SubPopulationSim(W, H, Pdeath, Precovery, Preinfiction, Ptravel, Pquaranti
         elif status == 0:
             return 0 
             
+        
+        
 
 
 	
+
+
+
+
+
+
+
+
+
 	
+
+
+
 
 
 
