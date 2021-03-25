@@ -170,6 +170,7 @@ class subPopulationSim:
         return pCombinedInfection
     
     def __str__(self):
+        """for use in print function: prints current grid state"""
         return str(self.gridState)
         
         
@@ -202,7 +203,6 @@ def simTest2(days, N=5):
         t.sleep(1)
     return sim
 
-	
 
 
 
