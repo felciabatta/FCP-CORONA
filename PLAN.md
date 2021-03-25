@@ -28,7 +28,8 @@ Classes
     	- probability of someone 'leaving the grid' and infecting another grid
     	self.vaccinated = ??
         
-        initialinfection(num)
+        initialinfection(self, num):
+        
         
         emptyspace():
         'randomly select grid points to be empty'
