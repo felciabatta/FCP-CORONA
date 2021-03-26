@@ -3,7 +3,6 @@ import numpy.random as r
 import time as t
 
 
-
 class subPopulationSim:
     """
     creates a 'sub-population' e.g. a city of people, 
@@ -12,12 +11,13 @@ class subPopulationSim:
     
     def __init__(self, width=5, height=5, pDeath=0.001, 
                  pInfection=0.5, pRecovery=0.1, pReinfection=0.005, 
-                 pTravel=0.01, pQuarantine=0.2, city='City'):
+                 pTravel=0.01, pQuarantine=0.2, city='City', pEndQuarentine=0.05):
         
         self.city = city
         self.width = width
         self.height = height
         
+        self.pEndQuarentine = pEndQuarentine
         self.pDeath = pDeath
         self.pInfection = pInfection
         self.pRecovery = pRecovery
@@ -78,14 +78,14 @@ class subPopulationSim:
         status = self.gridState[i, j]
         rand = r.random()
         
-        # susceptible
+        # susceptible becomes infected with infections around point on grid
         if status == 'S':
             if rand < self.updateProb(i,j):
                 return 'I'
             else:
                 return 'S'
             
-        # infected
+        # infected person either recovers, quarentines, dies or stays infected
         elif status == 'I':
             
             if r.random() < self.pQuarantine:
@@ -98,10 +98,13 @@ class subPopulationSim:
             else:
                 return 'I'
             
-        # quarantined (i.e. infected but can't spread)
+        # quarantined, can either become dead, recovered or remain in quarentine. if in quarentine the virus cannot spread.
         elif status == 'Q':
             if rand < self.pDeath:
-                    return 'D'
+                return 'D'
+            #person quarentine is ended too early and they come out infected
+            elif rand < self.pEndQuarentine:
+                return 'I'
             elif rand < self.pRecovery:
                 return 'R'
             else:
@@ -110,9 +113,10 @@ class subPopulationSim:
         
         # recovered
         elif status == 'R':
-            # may become susceptible, i.e. immunity wears off
+            # person can become suceptible again after infection
             if rand < self.pReinfection:
                 return 'S'
+            
             else:
                 return 'R'
         
@@ -132,6 +136,39 @@ class subPopulationSim:
         elif status == 'N':
             return None
         
+        #If someone is infected they have a possibility of travelling to another city
+        elif status == 'I':
+            if rand < self.pTravel:
+                return 'T'
+            else:
+                return 'I'
+            
+        #Probability of if travelled person will return    
+        elif status == 'T':
+            if rand < self.pTravel:
+                return 'I'
+            elif rand < self.pRecovery:
+                return 'R'
+            else:
+                return 'T'
+            
+        
+        
+    
+
+    def TravelCount(self):
+        """ determines amount of travelled people in the grid at any one time"""
+        #convert grid into a list of lists
+        Grid = [list(row) for row in self.gridState]
+        
+        #convert the list of lists into one list
+        Statuses = []
+        for row in Grid:
+            Statuses += row
+        
+        TravelCount = Statuses.count('T')
+        
+        return TravelCount
         
     def updateProb(self, i, j):
         """updates probility of person being infected, if susceptible"""  
@@ -173,12 +210,27 @@ class subPopulationSim:
         """for use in print function: prints current grid state"""
         return str(self.gridState)
         
+    
+    
         
 
-
-
-
-
+class PopulationSim:
+    """
+    Creates a class used to show the different cities within the simulation and the random travelling between them
+    """
+    
+    
+    def __init__(self, pInfection = 0.5):
+        self.Bristol = subPopulationSim(pInfection = pInfection)
+        self.Cardiff = subPopulationSim(pInfection = pInfection)
+        self.pInfectedbyTraveller = 0
+        self.pInfection = pInfection
+        
+    def PopulationTravel(self):
+        TravelledNum = self.Bristol.TravelCount() + self.Cardiff.TravelCount()
+        GridPoints = self.Bristol.width * self.Bristol.height + self.Cardiff.width * self.Cardiff.height
+        pInfectedbyTraveller = (TravelledNum / GridPoints) * self.pInfection
+        return pInfectedbyTraveller
 
 
 # MANUAL TEST FUNCTIONS ---------------------------------------------------------
@@ -202,6 +254,8 @@ def simTest2(days, N=5):
         print(sim.gridState)
         t.sleep(1)
     return sim
+
+
 
 
 
