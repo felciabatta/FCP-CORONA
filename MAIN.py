@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import argparse
+from SIMULATION.py import subPopulationSim
 
 def main(*args):
 
@@ -20,3 +23,14 @@ def main(*args):
     parser.add_argument('--file', metavar='N', type=str, default=None,
                         help='Filename to save to instead of showing on screen')
     args = parser.parse_args(args)
+    
+    simulation = subPopulationSim(args.size, args.size,
+                            args.recovery, args.infection, args.death)
+    
+if __name__ == "__main__":
+    
+    # CLI entry point. The main() function can also be imported and called
+    # with string arguments.
+    
+    import sys
+    main(*sys.argv[1:])
