@@ -111,7 +111,7 @@ class subPopulationSim:
                 return 'Q'
         
         
-        # recovered
+        # recovered but may not have antibodies and can be infected again
         elif status == 'R':
             # person can become suceptible again after infection
             if rand < self.pReinfection:
@@ -120,7 +120,7 @@ class subPopulationSim:
             else:
                 return 'R'
         
-        # vaccinated
+        # vaccinated however vacine can be ineffective and person can be vunerable to infection
         elif status == 'V':
             # may become susceptible, i.e. immunity wears off
             if rand < self.pReinfection:
@@ -158,10 +158,10 @@ class subPopulationSim:
 
     def TravelCount(self):
         """ determines amount of travelled people in the grid at any one time"""
-        #convert grid into a list of lists
+        #convert grid into a list of lists of person states
         Grid = [list(row) for row in self.gridState]
         
-        #convert the list of lists into one list
+        #convert the list of lists into a list of states in the grid
         Statuses = []
         for row in Grid:
             Statuses += row
@@ -254,6 +254,7 @@ def simTest2(days, N=5):
         print(sim.gridState)
         t.sleep(1)
     return sim
+
 
 
 
