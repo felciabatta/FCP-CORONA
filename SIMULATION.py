@@ -256,15 +256,31 @@ def simTest2(days, N=5):
     return sim
 
 
+def simTest3(days, w = 10):   # This will show how the states will vary with no quarantine with no vaccination.
+    bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.0, 'Bristol', 0)
+    bristol.randomInfection()
+    print("DAY 0:")
+    print(bristol.gridState)  # Initial grid state (effectively this is day 0)
 
+    for day in range(days):
+        bristol.updateSubPopulation()
+        print(f"DAY {day + 1}:")
+        print(f"{bristol.gridState} \n")  # grid state after x days
+        t.sleep(1)
 
+    # simTest3 offers a title for each day so that the view can easily recognise how long since the initial infection
 
+def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
+    bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.2, 'Bristol', 0.05)
+    bristol.randomInfection()
+    print("DAY 0:")
+    print(bristol.gridState)  # Initial grid state (effectively this is day 0)
 
-
-
-
-
-
+    for day in range(days):
+        bristol.updateSubPopulation()
+        print(f"DAY {day + 1}:")
+        print(f"{bristol.gridState} \n")  # grid state after x days
+        t.sleep(1)
 
 
 
