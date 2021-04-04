@@ -272,33 +272,53 @@ def simTestPop(days, N=10):
         t.sleep(1)
     return sim
 
+
 def simTest3(days, w = 10):   # This will show how the states will vary with no quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.0, 'Bristol', 0)
     bristol.randomInfection()
     print("DAY 0:")
     print(bristol.gridState)  # Initial grid state (effectively this is day 0)
-    suseptable = []
+    susceptable = []
     infected = []
     recovered = []
+    travelled = []
+    quarantined = []
+    dead = []
+    vaccinated = []
     for i in range(len(bristol.gridState)):
         for j in range(len(bristol.gridState[i])):
             if bristol.gridState[i, j] == 'I':
                 infected += 'I'
             elif bristol.gridState[i, j] == 'S':
-                suseptable += 'S'
+                susceptable += 'S'
             elif bristol.gridState[i, j] == 'R':
                 recovered += 'R'
-    data = pd.DataFrame([len(suseptable), len(infected), len(recovered)], columns=["Population"], index=[
-        'Susceptible',
-        'Infected',
-        'Recovered'
-    ])
+            elif bristol.gridState[i, j] == 'D':
+                dead += 'D'
+            elif bristol.gridState[i, j] == 'T':
+                travelled += 'T'
+            elif bristol.gridState[i, j] == 'Q':
+                quarantined += 'Q'
+            elif bristol.gridState[i, j] == 'V':
+                vaccinated += 'V'
+
+    data = pd.DataFrame([len(susceptable), len(infected), len(recovered), len(dead), len(travelled), len(quarantined),
+                         len(vaccinated)],
+                        columns=["Population"], index=['Susceptible',
+                                                       'Infected',
+                                                       'Recovered',
+                                                       'Dead',
+                                                       'Travelling',
+                                                       'Quarantining',
+                                                       'Vaccinated'])
     print(f"{data}\n------------------------------------------------")
     for day in range(days):
-        suseptable = []
+        susceptable = []
         infected = []
         recovered = []
-
+        travelled = []
+        quarantined = []
+        dead = []
         bristol.updateSubPopulation()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
@@ -308,14 +328,27 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
                 if bristol.gridState[i, j] == 'I':
                     infected += 'I'
                 elif bristol.gridState[i, j] == 'S':
-                    suseptable += 'S'
+                    susceptable += 'S'
                 elif bristol.gridState[i, j] =='R':
                     recovered += 'R'
-        data = pd.DataFrame([len(suseptable), len(infected), len(recovered)], columns=["Population"], index=[
-            'Susceptible',
-            'Infected',
-            'Recovered'
-        ])
+                elif bristol.gridState[i, j] =='D':
+                    dead += 'D'
+                elif bristol.gridState[i, j] == 'T':
+                    travelled += 'T'
+                elif bristol.gridState[i, j] == 'Q':
+                    quarantined += 'Q'
+                elif bristol.gridState[i, j] == 'V':
+                    vaccinated += 'V'
+        data = pd.DataFrame([len(susceptable), len(infected), len(recovered), len(dead), len(travelled),
+                             len(quarantined), len(vaccinated)], columns=["Population"],
+                            index=['Susceptible',
+                                   'Infected',
+                                   'Recovered',
+                                   'Dead',
+                                   'Travelling',
+                                   'Quarantining',
+                                   'Vaccinated'
+                                   ])
         print(f"{data}\n------------------------------------------------")
 
 
@@ -330,7 +363,7 @@ def simTest4(days, w = 10):   # This will show how the states will vary with qua
         print(f"{bristol.gridState} \n")  # grid state after x days
         t.sleep(1)
 
-
+simTest3(14, 10)
 
 # RESEARCH ----------------------------------------------------------------------
 
