@@ -24,3 +24,9 @@ Arguments
 - Number of people/grid size
 - Number of infected people
 - Number of vaccinated people
+
+
+
+For everyday a person is infected, increase the chance of them getting a test. 
+(corona symptoms dont show up immediatly, but take time to take effect)
+also have a flat probability for someone to randomly get tested.
