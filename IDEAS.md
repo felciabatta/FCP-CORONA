@@ -30,3 +30,6 @@ Arguments
 For everyday a person is infected, increase the chance of them getting a test. 
 (corona symptoms dont show up immediatly, but take time to take effect)
 also have a flat probability for someone to randomly get tested.
+
+There should also be probablities for a potential false positive or false negative for the test results.
+If a person gets a positive result (wether false or not) they will go into quarintine)
