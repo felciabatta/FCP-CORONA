@@ -350,7 +350,7 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
                                    'Vaccinated'
                                    ])
         print(f"{data}\n------------------------------------------------")
-
+    return data
 
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.2, 'Bristol', 0.05)
