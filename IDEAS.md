@@ -33,3 +33,6 @@ also have a flat probability for someone to randomly get tested.
 
 There should also be probablities for a potential false positive or false negative for the test results.
 If a person gets a positive result (wether false or not) they will go into quarintine)
+
+An idea to add a class for each person, inorder to track how many days each person has been infected or in quarintine
+or anything of the such
