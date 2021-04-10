@@ -273,7 +273,7 @@ def simTestPop(days, N=10):
     return sim
 
 
-def simTest3(days, w = 10):   # This will show how the states will vary with no quarantine with no vaccination.
+def simTest3(self, days, w = 10):   # This will show how the states will vary with no quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.0, 'Bristol', 0)
     bristol.randomInfection()
     print("DAY 0:")
@@ -350,7 +350,34 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
                                    'Vaccinated'
                                    ])
         print(f"{data}\n------------------------------------------------")
+        
+        
+        #calculates the percentages 
+        PopulationTotal = 100
+        PercentInfected = 100 * len(infected) / PopulationTotal
+        PercentSusceptable = 100 * len(susceptable) / PopulationTotal
+        PercentRecovered = 100 * len(recovered) / PopulationTotal
+        PercentDead = 100 * len(dead) / PopulationTotal
+        PercentVaccinated = 100 * len(vaccinated) / PopulationTotal
+        PercentQuarantined = 100 * len(quarantined) / PopulationTotal
+        PercentTravelled = 100 * len(travelled) / PopulationTotal
+        
+        data2 = pd.DataFrame([PercentInfected, PercentSusceptable, PercentRecovered, PercentDead, 
+                              PercentVaccinated, PercentQuarantined, PercentTravelled],
+                             columns=["Population State Percentages (%)"],
+                             index=['Percent Infected',
+                                    'Percent Susceptable',
+                                    'Percent Recovered',
+                                    'Percent Dead',
+                                    'Percent Vaccinated',
+                                    'Percent Quarentined',
+                                    'Percent Travelled'
+                                    ])
+        print(f"{data2}\n------------------------------------------------")
     return data
+    
+        
+        
 
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.2, 'Bristol', 0.05)
@@ -369,6 +396,7 @@ simTest3(14, 10)
 
 # Only 1/5 of symptomatic people DON'T self isolate
 # as of April 1st, 1/100 HAVE covid
+
 
 
 
