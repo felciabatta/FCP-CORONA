@@ -374,8 +374,9 @@ def simTest3(self, days, w = 10):   # This will show how the states will vary wi
                                     'Percent Travelled'
                                     ])
         print(f"{data2}\n------------------------------------------------")
+        
     return data
-    
+    return data2
         
         
 
@@ -396,6 +397,7 @@ simTest3(14, 10)
 
 # Only 1/5 of symptomatic people DON'T self isolate
 # as of April 1st, 1/100 HAVE covid
+
 
 
 
