@@ -259,7 +259,7 @@ def simTest2(days, N=5):
 
 
 
-
+simTest2(10,N=5)
 
 
 
