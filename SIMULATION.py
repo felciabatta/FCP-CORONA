@@ -164,21 +164,21 @@ class subPopulationSim:
         """updates probility of person being infected, if susceptible"""
 
         # define 'local area' of a i,j grid point
-        if i==0:
-            iMin=0
+        if i == 0:
+            iMin = 0
         else:
-            iMin=i-1
+            iMin = i-1
 
-        if j==0:
-            jMin=0
+        if j == 0:
+            jMin = 0
         else:
-            jMin=j-1
+            jMin = j-1
 
-        iMax=i+2
-        jMax=j+2
+        iMax = i+2
+        jMax = j+2
 
         tempGrid = self.gridState.copy()
-        tempGrid[i,j]=None
+        tempGrid[i,j] = None
 
         localGrid = [list(row) for row in tempGrid[iMin:iMax,jMin:jMax]]
         # print(localGrid)
@@ -187,7 +187,7 @@ class subPopulationSim:
         # gather and count infection status in local area
         localStatuses=[]
         for row in localGrid:
-            localStatuses+=row
+            localStatuses += row
         # print(localStatuses,'\n')
         localInfectedCount = localStatuses.count('I')
 
@@ -195,6 +195,72 @@ class subPopulationSim:
         pCombinedInfection = 1-(1-self.pInfectedByTraveller)*(1-self.pInfection)**localInfectedCount
 
         return pCombinedInfection
+
+    def collectData(self):
+        susceptable = []
+        infected = []
+        recovered = []
+        travelled = []
+        quarantined = []
+        dead = []
+        vaccinated = []
+        for i in range(len(self.gridState)):
+            for j in range(len(self.gridState[i])):
+                if self.gridState[i, j] == 'I':
+                    infected += 'I'
+                elif self.gridState[i, j] == 'S':
+                    susceptable += 'S'
+                elif self.gridState[i, j] == 'R':
+                    recovered += 'R'
+                elif self.gridState[i, j] == 'D':
+                    dead += 'D'
+                elif self.gridState[i, j] == 'T':
+                    travelled += 'T'
+                elif self.gridState[i, j] == 'Q':
+                    quarantined += 'Q'
+                elif self.gridState[i, j] == 'V':
+                    vaccinated += 'V'
+
+        data = pd.DataFrame(
+            [len(susceptable), len(infected), len(recovered), len(dead), len(travelled), len(quarantined),
+             len(vaccinated)],
+            columns=["Population"], index=['Susceptible',
+                                           'Infected',
+                                           'Recovered',
+                                           'Dead',
+                                           'Travelling',
+                                           'Quarantining',
+                                           'Vaccinated'])
+        print(f"{data}\n------------------------------------------------")
+
+
+        PopulationTotal = data['Population'].sum()
+        print(f"Total population: {PopulationTotal}")
+
+        PercentInfected = 100 * len(infected) / PopulationTotal
+        PercentSusceptable = 100 * len(susceptable) / PopulationTotal
+        PercentRecovered = 100 * len(recovered) / PopulationTotal
+        PercentDead = 100 * len(dead) / PopulationTotal
+        PercentVaccinated = 100 * len(vaccinated) / PopulationTotal
+        PercentQuarantined = 100 * len(quarantined) / PopulationTotal
+        PercentTravelled = 100 * len(travelled) / PopulationTotal
+
+        data2 = pd.DataFrame([PercentInfected, PercentSusceptable, PercentRecovered, PercentDead,
+                              PercentVaccinated, PercentQuarantined, PercentTravelled],
+                             columns=["Population State Percentages (%)"],
+                             index=['Percent Infected',
+                                    'Percent Susceptable',
+                                    'Percent Recovered',
+                                    'Percent Dead',
+                                    'Percent Vaccinated',
+                                    'Percent Quarantined',
+                                    'Percent Travelled'
+                                    ])
+        print(f"{data2}\n------------------------------------------------")
+
+        return data
+        return data2
+
 
 
     def __str__(self):
@@ -278,50 +344,14 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
     bristol.randomInfection()
     print("DAY 0:")
     print(bristol.gridState)  # Initial grid state (effectively this is day 0)
-    susceptable = []
-    infected = []
-    recovered = []
-    travelled = []
-    quarantined = []
-    dead = []
-    vaccinated = []
-    for i in range(len(bristol.gridState)):
-        for j in range(len(bristol.gridState[i])):
-            if bristol.gridState[i, j] == 'I':
-                infected += 'I'
-            elif bristol.gridState[i, j] == 'S':
-                susceptable += 'S'
-            elif bristol.gridState[i, j] == 'R':
-                recovered += 'R'
-            elif bristol.gridState[i, j] == 'D':
-                dead += 'D'
-            elif bristol.gridState[i, j] == 'T':
-                travelled += 'T'
-            elif bristol.gridState[i, j] == 'Q':
-                quarantined += 'Q'
-            elif bristol.gridState[i, j] == 'V':
-                vaccinated += 'V'
+    bristol.collectData()
 
-    data = pd.DataFrame([len(susceptable), len(infected), len(recovered), len(dead), len(travelled), len(quarantined),
-                         len(vaccinated)],
-                        columns=["Population"], index=['Susceptible',
-                                                       'Infected',
-                                                       'Recovered',
-                                                       'Dead',
-                                                       'Travelling',
-                                                       'Quarantining',
-                                                       'Vaccinated'])
-    print(f"{data}\n------------------------------------------------")
     for day in range(days):
-        susceptable = []
-        infected = []
-        recovered = []
-        travelled = []
-        quarantined = []
-        dead = []
+        t.sleep(1)
         bristol.updateSubPopulation()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
+<<<<<<< HEAD
         t.sleep(1)
         for i in range(len(bristol.gridState)):
             for j in range(len(bristol.gridState[i])):
@@ -351,7 +381,13 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
                                    ])
         print(f"{data}\n------------------------------------------------")
     return data
+=======
+        bristol.collectData()
+>>>>>>> 659b0b2acdbce261870272d5ec8bcad28f09c1d7
 
+
+
+simTest2(10,N=5)
 
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.2, 'Bristol', 0.05)
@@ -364,12 +400,43 @@ def simTest4(days, w = 10):   # This will show how the states will vary with qua
         print(f"{bristol.gridState} \n")  # grid state after x days
         t.sleep(1)
 
-simTest3(14, 10)
+
+def createSubPop():
+    w = int(input("Input the width of the population size for a\n 'w x w' grid: "))
+    pDeath = float(input("Input the probability of death from the virus: "))
+    pInfection = float(input("Input the probability of infection from the virus: "))
+    pRecovery = float(input("Input the probability of recovery for a infected person: "))
+    pReinfection = float(input("Input the probability of getting re-infected\nafter already recovering: "))
+    pTravel = float(input("Input the probability of the person travelling: "))
+    pQuarantine = float(input("Input the probability of a person going into quarantine: "))
+    city = input("Input the name of the city for the sub-population: ")
+    pEndQuarantine = float(input("Input the probability of the person ending the quarantine early: "))
+    return subPopulationSim(w, w,pDeath, pInfection, pRecovery, pReinfection, pTravel, pQuarantine, city,
+                            pEndQuarantine)
+
+
+def customSimTest(days):  # Try out different options for the variables easily using this
+    subPop = createSubPop()
+    subPop.randomInfection()
+    print("DAY 0:")
+    print(subPop.gridState)  # Initial grid state (effectively this is day 0)
+    subPop.collectData()
+    for day in range(days):
+        t.sleep(1)
+        subPop.updateSubPopulation()
+        print(f"DAY {day + 1}:")
+        print(f"{subPop.gridState} \n")  # grid state after x days
+        subPop.collectData()
+
+
+simTest3(30, 18)
 
 # RESEARCH ----------------------------------------------------------------------
 
 # Only 1/5 of symptomatic people DON'T self isolate
 # as of April 1st, 1/100 HAVE covid
+
+
 
 
 
