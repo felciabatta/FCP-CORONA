@@ -1,71 +1,46 @@
-#Animation part of code 
-#For line animation 
-#For grid animation 
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation 
-"creates a grid animation of suceptible, infected, recovered "
-#Creates a grid of colours to be plotted 
+
+
+class animation():
+    def __init__(self):
+        self.comment = "initialise here"
+        
+    #NOTE: Not sure where this goes yet
+    def get_Colours(self):
+        # Creates a grid of colours to be plotted 
+        colour_grid = np.zeros((self.width,self.height,3),int)
+        for status, statusLet in self.gridState :
+            colour = self.Colours[status]
+            colour_rgb = self.COLOURMAP_RGB[colour]
+            colour_grid[self.state == statusLet] = colour_rgb
+            return colour_grid
 
 
 
-
-def get_Colours (self):
-    colour_grid = np.zeros((self.width,self.height,3),int)
-    for status, statusLet in self.gridState :
-       colour = self.Colours[status]
-       colour_rgb = self.COLOURMAP_RGB[colour]
-       colour_grid[self.state == statusLet] = colour_rgb
-       return colour_grid
-       
-
-
-class GridAnimation:
-  def init (self, axes, simulation):
-      self.axes=axes
-      self.simulation=simulation
-      
-      
-      self.image = self.axes.imshow(colour_grid)
-      self.axes.set_xticks([])
-      self.axes.set_yticks([])
-
-  def init(self):
+class GridAnimation():
+    """creates a grid animation of suceptible, infected, recovered"""
+    def __init__(self, axes, simulation, colour_grid):
+        self.axes=axes
+        self.simulation=simulation
+        
+        self.image = self.axes.imshow(colour_grid)
+        self.axes.set_xticks([])
+        self.axes.set_yticks([])
+    
+    
+    def init(self):
         return self.update(0)
-
-  def update(self, data):
-        
+    
+    def update(self, data):
         return[self.image]
-      
-        
-       
-
-
-
 
 
 
 class LineAnimation: 
     """Creates a line animation showing the changes in Suceptible, Infected, Recovered and Dead people"""
-    
-<<<<<<< HEAD
-        
-    
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
     #Writing in Psuedo Code until function is created
     #Importing data from simulation.py
     def __init__(self, data, axes, duration, line):
@@ -89,162 +64,3 @@ class LineAnimation:
         self.Infected.append(data.loc['Infected', 'Population'] + data.loc['Quarantine', 'Population'] + data.loc['Travelled', 'Population'])
         self.Dead.append(data.loc['Dead', 'Population'])
         
->>>>>>> 5953129fd253eed1ea2424ea9704261adf06b484
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
