@@ -354,9 +354,9 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
         bristol.collectData()
 
 
-<<<<<<< HEAD
+
 simTest2(10,N=5)
-=======
+
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.2, 'Bristol', 0.05)
     bristol.randomInfection()
@@ -396,7 +396,6 @@ def customSimTest(days):  # Try out different options for the variables easily u
         print(f"{subPop.gridState} \n")  # grid state after x days
         subPop.collectData()
 
->>>>>>> 5953129fd253eed1ea2424ea9704261adf06b484
 
 simTest3(30, 18)
 
