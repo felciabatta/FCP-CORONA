@@ -259,9 +259,56 @@ class subPopulationSim:
         print(f"{data2}\n------------------------------------------------")
 
         return data
+        
+
+    def Percentage(self):
+        susceptable = []
+        infected = []
+        recovered = []
+        travelled = []
+        quarantined = []
+        dead = []
+        vaccinated = []
+        for i in range(len(self.gridState)):
+            for j in range(len(self.gridState[i])):
+                if self.gridState[i, j] == 'I':
+                    infected += 'I'
+                elif self.gridState[i, j] == 'S':
+                    susceptable += 'S'
+                elif self.gridState[i, j] == 'R':
+                    recovered += 'R'
+                elif self.gridState[i, j] == 'D':
+                    dead += 'D'
+                elif self.gridState[i, j] == 'T':
+                    travelled += 'T'
+                elif self.gridState[i, j] == 'Q':
+                    quarantined += 'Q'
+                elif self.gridState[i, j] == 'V':
+                    vaccinated += 'V'
+
+        PopulationTotal = len(infected) + len(susceptable) + len(recovered) + len(dead) + len(vaccinated) + len(quarantined) + len(travelled)
+        print(f"Total population: {PopulationTotal}")
+
+        PercentInfected = 100 * len(infected) / PopulationTotal
+        PercentSusceptable = 100 * len(susceptable) / PopulationTotal
+        PercentRecovered = 100 * len(recovered) / PopulationTotal
+        PercentDead = 100 * len(dead) / PopulationTotal
+        PercentVaccinated = 100 * len(vaccinated) / PopulationTotal
+        PercentQuarantined = 100 * len(quarantined) / PopulationTotal
+        PercentTravelled = 100 * len(travelled) / PopulationTotal
+
+        data2 = pd.DataFrame([PercentInfected, PercentSusceptable, PercentRecovered, PercentDead,
+                              PercentVaccinated, PercentQuarantined, PercentTravelled],
+                             columns=["Population State Percentages (%)"],
+                             index=['Percent Infected',
+                                    'Percent Susceptable',
+                                    'Percent Recovered',
+                                    'Percent Dead',
+                                    'Percent Vaccinated',
+                                    'Percent Quarantined',
+                                    'Percent Travelled'
+                                    ])
         return data2
-
-
 
     def __str__(self):
         """for use in print function: prints current grid state"""
@@ -387,7 +434,7 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
 
 
 
-simTest2(10,N=5)
+
 
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.2, 'Bristol', 0.05)
@@ -435,6 +482,8 @@ simTest3(30, 18)
 
 # Only 1/5 of symptomatic people DON'T self isolate
 # as of April 1st, 1/100 HAVE covid
+
+
 
 
 
