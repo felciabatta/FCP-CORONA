@@ -350,6 +350,7 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
                                    'Vaccinated'
                                    ])
         print(f"{data}\n------------------------------------------------")
+    return data
 
 
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.

@@ -27,8 +27,9 @@ def main(*args):
     simulation = subPopulationSim(args.size, args.size,
                             args.recovery, args.infection, args.death)
     
+
+
+
 if __name__ == "__main__":
-    
-    
     import sys
     main(*sys.argv[1:])
