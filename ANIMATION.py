@@ -4,26 +4,38 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation 
+"creates a grid animation of suceptible, infected, recovered "
+#Creates a grid of colours to be plotted 
+
+
+
+
+def get_Colours (self):
+    colour_grid = np.zeros((self.width,self.height,3),int)
+    for status, statusLet in self.gridState :
+       colour = self.Colours[status]
+       colour_rgb = self.COLOURMAP_RGB[colour]
+       colour_grid[self.state == statusLet] = colour_rgb
+       return colour_grid
+       
+
 
 class GridAnimation:
   def init (self, axes, simulation):
       self.axes=axes
       self.simulation=simulation
       
-      rgb_matrix = self.simulation.get_sim.gridState
-      self.image = self.axes.imshow(rgb_matrix)
+      
+      self.image = self.axes.imshow(colour_grid)
       self.axes.set_xticks([])
       self.axes.set_yticks([])
 
   def init(self):
         return self.update(0)
 
-  def update(self, framenum):
-        day = framenum
-        rgb_matrix = self.simulation.get_rgb_matrix()
-        self.image.set_array(rgb_matrix)
-        return [self.image]
-        print(self.image)
+  def update(self, data):
+        
+        return[self.image]
       
         
        
