@@ -396,7 +396,7 @@ def customSimTest(days):  # Try out different options for the variables easily u
         print(f"{subPop.gridState} \n")  # grid state after x days
         subPop.collectData()
 
->>>>>>> 5953129fd253eed1ea2424ea9704261adf06b484
+>>>>>>> 5953129fd253eed1ea2424ea9704261adf06b484w
 
 simTest3(30, 18)
 
