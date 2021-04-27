@@ -163,7 +163,7 @@ class subPopulationSim:
     def updateProb(self, i, j):
         """updates probility of person being infected, if susceptible"""
 
-        # define 'local area' of a i,j grid point
+        # define 'local area' of an i,j grid point
         if i == 0:
             iMin = 0
         else:
@@ -231,10 +231,41 @@ class subPopulationSim:
                                            'Travelling',
                                            'Quarantining',
                                            'Vaccinated'])
+        # NOTE: rather than printing within method, do nothing, so have option to
+        #       print outside of method 
         print(f"{data}\n------------------------------------------------")
 
+        return data
+        
 
-        PopulationTotal = data['Population'].sum()
+    def Percentage(self):
+        # NOTE: Can reduce amount of code as first 23 lines repeated from above
+        #       Also could include % in same table as absolute values
+        susceptable = []
+        infected = []
+        recovered = []
+        travelled = []
+        quarantined = []
+        dead = []
+        vaccinated = []
+        for i in range(len(self.gridState)):
+            for j in range(len(self.gridState[i])):
+                if self.gridState[i, j] == 'I':
+                    infected += 'I'
+                elif self.gridState[i, j] == 'S':
+                    susceptable += 'S'
+                elif self.gridState[i, j] == 'R':
+                    recovered += 'R'
+                elif self.gridState[i, j] == 'D':
+                    dead += 'D'
+                elif self.gridState[i, j] == 'T':
+                    travelled += 'T'
+                elif self.gridState[i, j] == 'Q':
+                    quarantined += 'Q'
+                elif self.gridState[i, j] == 'V':
+                    vaccinated += 'V'
+
+        PopulationTotal = len(infected) + len(susceptable) + len(recovered) + len(dead) + len(vaccinated) + len(quarantined) + len(travelled)
         print(f"Total population: {PopulationTotal}")
 
         PercentInfected = 100 * len(infected) / PopulationTotal
@@ -256,12 +287,7 @@ class subPopulationSim:
                                     'Percent Quarantined',
                                     'Percent Travelled'
                                     ])
-        print(f"{data2}\n------------------------------------------------")
-
-        return data
         return data2
-
-
 
     def __str__(self):
         """for use in print function: prints current grid state"""
@@ -277,6 +303,9 @@ class populationSim:
 
 
     def __init__(self, N=5, pInfection = 0.5):
+        # NOTE: Can change to input list of cities, to make more generalised,
+        #       then for methods, just loop through list. 
+        #       The list would be manually created outside the class
         self.Bristol = subPopulationSim(width=N, height=N, pInfection = pInfection)
         self.Cardiff = subPopulationSim(width=N, height=N, pInfection = pInfection)
         self.pInfectedByTraveller = 0
@@ -339,11 +368,12 @@ def simTestPop(days, N=10):
     return sim
 
 
-def simTest3(days, w = 10):   # This will show how the states will vary with no quarantine with no vaccination.
+def simTest3(days, w = 10):
+    # This will show how the states will vary with no quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.0, 'Bristol', 0)
     bristol.randomInfection()
     print("DAY 0:")
-    print(bristol.gridState)  # Initial grid state (effectively this is day 0)
+    print(bristol.gridState)  # Initial grid state (day 0)
     bristol.collectData()
 
     for day in range(days):
@@ -351,12 +381,11 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
         bristol.updateSubPopulation()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
+        t.sleep(1)
         bristol.collectData()
 
 
-<<<<<<< HEAD
-simTest2(10,N=5)
-=======
+
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.2, 'Bristol', 0.05)
     bristol.randomInfection()
@@ -367,6 +396,7 @@ def simTest4(days, w = 10):   # This will show how the states will vary with qua
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
         t.sleep(1)
+
 
 
 def createSubPop():
@@ -383,11 +413,13 @@ def createSubPop():
                             pEndQuarantine)
 
 
-def customSimTest(days):  # Try out different options for the variables easily using this
+
+def customSimTest(days):
+    # Try out different options for the variables easily using this
     subPop = createSubPop()
     subPop.randomInfection()
     print("DAY 0:")
-    print(subPop.gridState)  # Initial grid state (effectively this is day 0)
+    print(subPop.gridState)  # Initial grid state (day 0)
     subPop.collectData()
     for day in range(days):
         t.sleep(1)
@@ -396,7 +428,6 @@ def customSimTest(days):  # Try out different options for the variables easily u
         print(f"{subPop.gridState} \n")  # grid state after x days
         subPop.collectData()
 
->>>>>>> 5953129fd253eed1ea2424ea9704261adf06b484w
 
 simTest3(30, 18)
 
@@ -404,6 +435,8 @@ simTest3(30, 18)
 
 # Only 1/5 of symptomatic people DON'T self isolate
 # as of April 1st, 1/100 HAVE covid
+
+
 
 
 
