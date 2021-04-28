@@ -294,7 +294,41 @@ class subPopulationSim:
         return str(self.gridState)
 
 
-
+    def get_Colours (self):
+        colour_grid =np.zeros((self.width,self.height,3),int)
+        for i in range(len(self.gridState)):
+          for j in range(len(self.gridState[i])):
+             if  self.gridState[i, j] == 'S':
+                colour_grid[i][j][0]=0
+                colour_grid[i][j][1]=255
+                colour_grid[i][j][2]=0
+             elif self.gridState[i, j] == 'I':
+               colour_grid[i][j][0]=255
+               colour_grid[i][j][1]=0
+               colour_grid[i][j][2]=0
+             elif self.gridState[i, j] == 'V':
+               colour_grid[i][j][0]=0
+               colour_grid[i][j][1]=0
+               colour_grid[i][j][2]=255
+             elif self.gridState[i, j] == 'D':     
+                colour_grid[i][j][0]=0
+                colour_grid[i][j][1]=0
+                colour_grid[i][j][2]=0
+             elif self.gridState[i, j] == 'Q': 
+                colour_grid[i][j][0]=3
+                colour_grid[i][j][1]=4
+                colour_grid[i][j][2]=5
+             elif self.gridState[i, j] == 'R': 
+                colour_grid[i][j][0]=6
+                colour_grid[i][j][1]=7
+                colour_grid[i][j][2]=8
+             elif self.gridState[i, j] == 'T': 
+                colour_grid[i][j][0]=8
+                colour_grid[i][j][1]=9
+                colour_grid[i][j][2]=10
+        
+        return(colour_grid)
+            
 
 class populationSim:
     """
