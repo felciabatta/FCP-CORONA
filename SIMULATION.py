@@ -293,7 +293,7 @@ class subPopulationSim:
         """for use in print function: prints current grid state"""
         return str(self.gridState)
 
-
+    "For use in grid Animation gets a colour grid to be plotted"
     def get_Colours (self):
         colour_grid =np.zeros((self.width,self.height,3),int)
         for i in range(len(self.gridState)):
@@ -315,17 +315,17 @@ class subPopulationSim:
                 colour_grid[i][j][1]=0
                 colour_grid[i][j][2]=0
              elif self.gridState[i, j] == 'Q': 
-                colour_grid[i][j][0]=3
-                colour_grid[i][j][1]=4
-                colour_grid[i][j][2]=5
+                colour_grid[i][j][0]=200
+                colour_grid[i][j][1]=50
+                colour_grid[i][j][2]=100
              elif self.gridState[i, j] == 'R': 
-                colour_grid[i][j][0]=6
-                colour_grid[i][j][1]=7
-                colour_grid[i][j][2]=8
+                colour_grid[i][j][0]=50
+                colour_grid[i][j][1]=50
+                colour_grid[i][j][2]=250
              elif self.gridState[i, j] == 'T': 
-                colour_grid[i][j][0]=8
-                colour_grid[i][j][1]=9
-                colour_grid[i][j][2]=10
+                colour_grid[i][j][0]=30
+                colour_grid[i][j][1]=100
+                colour_grid[i][j][2]=150
         
         return(colour_grid)
             
