@@ -381,9 +381,8 @@ def simTest3(days, w = 10):
         bristol.updateSubPopulation()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
-        t.sleep(1)
         bristol.collectData()
-
+        t.sleep(0.1)
 
 
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
@@ -427,9 +426,6 @@ def customSimTest(days):
         print(f"DAY {day + 1}:")
         print(f"{subPop.gridState} \n")  # grid state after x days
         subPop.collectData()
-
-
-simTest3(30, 18)
 
 # RESEARCH ----------------------------------------------------------------------
 
