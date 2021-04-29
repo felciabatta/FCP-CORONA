@@ -3,7 +3,14 @@ import numpy.random as r
 import time as t
 import pandas as pd
 
-
+class person:
+    
+    def __init__(self, status = "S"):
+        self.status = status
+        
+    def __str__(self):
+        return self.status
+        
 class subPopulationSim:
     """
     creates a 'sub-population' e.g. a city of people, 
@@ -32,7 +39,7 @@ class subPopulationSim:
         self.day = 0
 
         # initalise grid of statuses, with susceptible people
-        self.gridState = np.full([width, height], 'S')
+        self.gridState = np.full([width, height], person())
 
 
     def emptyLocation(self, pEmpty):
@@ -50,17 +57,17 @@ class subPopulationSim:
 
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i,j] == 'S' and r.random() < pInitialInfection:
-                    self.gridState[i,j] = 'I'
+                if self.gridState[i,j].status == 'S' and r.random() < pInitialInfection:
+                    self.gridState[i,j].status = 'I'
 
 
     def randomVaccination(self, pVaccination=0.05):
-        """randomly infect, with probability pInitialInfection"""
+        """randomly vaccinate, with probability pVaccination"""
 
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i,j] == 'S' and r.random() < pVaccination:
-                    self.gridState[i,j] = 'V'
+                if self.gridState[i,j].status == 'S' and r.random() < pVaccination:
+                    self.gridState[i,j].status = 'V'
 
 
     def updateSubPopulation(self):
@@ -354,9 +361,9 @@ def simTest3(days, w = 10):   # This will show how the states will vary with no 
         bristol.collectData()
 
 
-<<<<<<< HEAD
-simTest2(10,N=5)
-=======
+# <<<<<<< HEAD
+# simTest2(10,N=5)
+# =======
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.2, 'Bristol', 0.05)
     bristol.randomInfection()
@@ -396,7 +403,7 @@ def customSimTest(days):  # Try out different options for the variables easily u
         print(f"{subPop.gridState} \n")  # grid state after x days
         subPop.collectData()
 
->>>>>>> 5953129fd253eed1ea2424ea9704261adf06b484
+# >>>>>>> 5953129fd253eed1ea2424ea9704261adf06b484
 
 simTest3(30, 18)
 
