@@ -46,3 +46,12 @@ VACCINATION:
 - can decide on when to introduce the vaccine by how severe the virus is, the more deadly the quciker it is made
 - if we have different death probabilities for different age catergories it can start by vaccinating the people who are
 most likely to die
+
+CORONA DATA:
+- 5.4% likely to die 70+
+- 0.5% likely to die 50-69
+- 0.02% likely to die 20-49
+- being within 2 meters of someone with covid for 2 minutes 30% likely to catch COVID off them
+https://www.forbes.com/sites/theapothecary/2020/10/06/what-is-your-risk-of-dying-from-covid-19/?sh=38bce6736159
+https://ourworldindata.org/coronavirus
+
