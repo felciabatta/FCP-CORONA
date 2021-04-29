@@ -424,10 +424,12 @@ def simTest4(days, w = 10):   # This will show how the states will vary with qua
     bristol.randomInfection()
     print("DAY 0:")
     print(bristol.gridState)  # Initial grid state (effectively this is day 0)
+    bristol.collectData()
     for day in range(days):
         bristol.updateSubPopulation()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
+        bristol.collectData()
         t.sleep(1)
 
 
@@ -466,7 +468,7 @@ def customSimTest(days):
 # Only 1/5 of symptomatic people DON'T self isolate
 # as of April 1st, 1/100 HAVE covid
 
-
+simTest4(10, 10)
 
 
 
