@@ -12,7 +12,7 @@ class subPopulationSim:
 
     def __init__(self, width=5, height=5, pDeath=0.0128,
                  pInfection=0.3, pRecovery=0.1, pReinfection=0.005,
-                 pTravel=0.01, pQuarantine=0.15, city='City',
+                 pTravel=0.03, pQuarantine=0.15, city='City',
                  pEndQuarantine=0.05, pVaccination = 0.0001
                  ):
 
@@ -36,7 +36,7 @@ class subPopulationSim:
         self.populationSize=width*height
 
         # initalise grid of statuses, with susceptible people
-        self.gridState = np.full([width, height], "S")
+        self.gridState = np.full([width, height], 'S')
 
 
     def emptyLocation(self, pEmpty):
@@ -54,8 +54,8 @@ class subPopulationSim:
 
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i,j].status == 'S' and r.random() < pInitialInfection:
-                    self.gridState[i,j].status = 'I'
+                if self.gridState[i,j] == 'S' and r.random() < pInitialInfection:
+                    self.gridState[i,j] = 'I'
 
 
     def randomVaccination(self):
@@ -67,7 +67,7 @@ class subPopulationSim:
                     self.gridState[i,j] = 'V'
 
 
-    def updateSubPopulation(self):
+    def update(self):
         """updates whole subpopulation"""
 
         # initialise updated grid 
@@ -188,8 +188,6 @@ class subPopulationSim:
         tempGrid[i,j] = None
 
         localGrid = [list(row) for row in tempGrid[iMin:iMax,jMin:jMax]]
-        # print(localGrid)
-        # input('next')
 
         # gather and count infection status in local area
         localStatuses=[]
@@ -266,11 +264,8 @@ class subPopulationSim:
                                    'Quarantining',
                                    'Vaccinated'])
         
-        data['Population State Percentages (%)'] = PercentData
-
-        # NOTE: rather than printing within method, just return data, 
-        #       so have option to print outside of method
-        # print(f"{data}\n------------------------------------------------")
+        data['(%)'] = PercentData
+        
         return data
 
 
@@ -325,47 +320,79 @@ class populationSim:
     simulates multiple subpopulations and people travelling between them
     """
     
-    def __init__(self, N=5, pInfection = 0.5):
+    def __init__(self, subPopulations=[subPopulationSim(city="City1"),
+                                       subPopulationSim(city="City2")], 
+                 N=5, pInfection = 0.5):
         # NOTE: Can change to input list of cities, to make more generalised,
         #       then for methods, just loop through list. 
         #       The list would be manually created outside the class
-        self.Bristol = subPopulationSim(width=N, height=N, pInfection = pInfection)
-        self.Cardiff = subPopulationSim(width=N, height=N, pInfection = pInfection)
+        
+        # OLD CODE:
+        # self.Bristol = subPopulationSim(width=N, height=N, pInfection = pInfection)
+        # self.Cardiff = subPopulationSim(width=N, height=N, pInfection = pInfection)
+        
+        # initialise list of subpopulations, all have same pInfection,
+        # all other parameters may be different
+        self.subPopulations = subPopulations
+        for sp in self.subPopulations:
+            sp.pInfection = pInfection
+        
         self.pInfectedByTraveller = 0
         self.pInfection = pInfection
 
 
     def populationTravel(self):
         """defines probabilty of being infected by traveller"""
-        TravelledNum = self.Bristol.TravelCount() + self.Cardiff.TravelCount()
-        GridPoints = self.Bristol.width*self.Bristol.height + self.Cardiff.width*self.Cardiff.height
+        TravelledNum = 0
+        GridPoints = 0
+        
+        for sp in self.subPopulations:
+            TravelledNum+=sp.TravelCount()
+            GridPoints+=sp.populationSize
+        
+        # OLD CODE:
+        # TravelledNum = self.Bristol.TravelCount() + self.Cardiff.TravelCount()
+        # GridPoints = self.Bristol.width*self.Bristol.height + self.Cardiff.width*self.Cardiff.height
+        
         self.pInfectedByTraveller = (TravelledNum / GridPoints)*self.pInfection
 
 
-    def updatePopulation(self):
-        """assigns new traveller infection and updates each subpopulation"""
+    def update(self):
+        """assigns new traveller infection probabilty and updates each subpopulation"""
         self.populationTravel()
-
-        self.Bristol.pInfectedByTraveller=self.pInfectedByTraveller
-        self.Cardiff.pInfectedByTraveller=self.pInfectedByTraveller
-
-        self.Bristol.updateSubPopulation()
-        self.Cardiff.updateSubPopulation()
+        
+        for sp in self.subPopulations:
+            sp.pInfectedByTraveller=self.pInfectedByTraveller
+            sp.update()
+        
+        # OLD CODE:
+        # self.Bristol.pInfectedByTraveller=self.pInfectedByTraveller
+        # self.Cardiff.pInfectedByTraveller=self.pInfectedByTraveller
+        # self.Bristol.update()
+        # self.Cardiff.update()
 
 
     def __str__(self):
         """for use in print function: prints all current grid states"""
-        return 'Bristol:\n'+str(self.Bristol)+'\n\n'+'Cardiff:\n'+str(self.Cardiff)+'\n\n\n'
+        GridPrint=''
+        for sp in self.subPopulations:
+            GridPrint+=f'{sp.city}:\n'+str(sp)+'\n\n'
+            
+        # OLD CODE:
+        # return 'Bristol:\n'+str(self.Bristol)+'\n\n'+'Cardiff:\n'+str(self.Cardiff)+'\n\n\n'
+        
+        return GridPrint
 
 
 # MANUAL TEST FUNCTIONS ---------------------------------------------------------
-"""can be run manually in interactive console, for testing code"""
+"""can be run manually in interactive console for testing code, 
+   or to be used in MAIN"""
 
 def simTestInit():
     sim=subPopulationSim()
     sim.randomInfection(0.2)
     print(sim)
-    sim.updateSubPopulation()
+    sim.update()
     print(sim)
     return sim
 
@@ -375,17 +402,20 @@ def simTestDays(days, N=5):
     print(sim.gridState)
 
     for day in range(days):
-        sim.updateSubPopulation()
+        sim.update()
         print(sim)
         t.sleep(1)
     return sim
 
-def simTestPop(days, N=10):
-    sim=populationSim(N=N)
-    sim.Bristol.randomInfection(pInitialInfection=0.1)
+def simTestPop(days):
+    cities=[subPopulationSim(15,15,city="London"),
+            subPopulationSim(8,8,city="Bristol"),
+            subPopulationSim(8,8,city="Manchester")]
+    sim=populationSim(subPopulations=cities)
+    sim.subPopulations[0].randomInfection(pInitialInfection=0.1)
 
     for day in range(days):
-        sim.updatePopulation()
+        sim.update()
         print(sim)
         t.sleep(1)
     return sim
@@ -397,11 +427,11 @@ def simTest3(days, w = 10):
     bristol.randomInfection()
     print("DAY 0:")
     print(bristol.gridState)  # Initial grid state (day 0)
-    bristol.collectData()
+    print(bristol.collectData())
 
     for day in range(days):
         t.sleep(1)
-        bristol.updateSubPopulation()
+        bristol.update()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
         bristol.collectData()
@@ -416,7 +446,7 @@ def simTest4(days, w = 10):   # This will show how the states will vary with qua
     print(bristol.gridState)  # Initial grid state (effectively this is day 0)
     bristol.collectData()
     for day in range(days):
-        bristol.updateSubPopulation()
+        bristol.update()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
         bristol.collectData()
@@ -447,10 +477,10 @@ def customSimTest(days):
     subPop.collectData()
     for day in range(days):
         t.sleep(1)
-        subPop.updateSubPopulation()
+        subPop.update()
         print(f"DAY {day + 1}:")
         print(f"{subPop.gridState} \n")  # grid state after x days
-        subPop.collectData()
+        print(subPop.collectData())
 
 
 def SimTestVaccine(days):
@@ -465,16 +495,10 @@ def SimTestVaccine(days):
             subPop.pVaccination = subPop.pVaccination * 1.05
         subPop.randomVaccination()    
         t.sleep(1)
-        subPop.updateSubPopulation()
+        subPop.update()
         print(f"DAY {day + 1}:")
         print(f"{subPop.gridState} \n")  
         print(subPop.collectData())
-        
-        
-        
-        
-        
-
 
 
 
@@ -482,17 +506,3 @@ def SimTestVaccine(days):
 
 # Only 1/5 of symptomatic people DON'T self isolate
 # as of April 1st, 1/100 HAVE covid
-
-
-
-
-
-
-
-
-
-
-
-
-
-

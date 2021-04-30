@@ -3,19 +3,34 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation 
 
 
-class animation():
-    def __init__(self):
-        self.comment = "initialise here"
+class Animation:
+    """Animates simultion as a grid and line graph"""
+    
+    def __init__(self, simulation, duration):
+        self.simulation = simulation
+        self.duration = duration
         
-    #NOTE: Not sure where this goes yet
-    def get_Colours(self):
-        # Creates a grid of colours to be plotted 
-        colour_grid = np.zeros((self.width,self.height,3),int)
-        for status, statusLet in self.gridState :
-            colour = self.Colours[status]
-            colour_rgb = self.COLOURMAP_RGB[colour]
-            colour_grid[self.state == statusLet] = colour_rgb
-            return colour_grid
+        self.figure = plt.figure(figsize=(8, 4))
+        self.gridAx = self.figure.add_subplot(1, 2, 1)
+        self.gridLine, = self.gridAx.plot([],[], lw=2) #TEMP, will delete later
+        self.lineAx = self.figure.add_subplot(1, 2, 2)
+        
+        self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 
+                                           duration, self.simulation.populationSize)
+    
+    def show(self):
+        animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
+                                  frames=self.duration, blit=True, interval=150)
+        plt.show()
+        
+    def init(self):
+        # self.gridLine.set_data([0],[0])
+        return self.LineAnimation.init()
+    
+    def update(self, framenum):
+        self.simulation.update()
+        # grid update
+        return self.LineAnimation.update(self.simulation.collectData())
 
 
 
@@ -36,45 +51,7 @@ class GridAnimation():
     
     def update(self, data):
         return[self.image]
-
-
-
-class AnimationTemp:
-    """testing out animations,
-       its such an awful mess, but at least finally does something"""
     
-    def __init__(self, simulation, duration):
-        self.simulation = simulation
-        self.duration = duration
-        
-        self.figure = plt.figure(figsize=(8, 4))
-        self.gridAx = self.figure.add_subplot(1, 2, 1)
-        self.gridLine, = self.gridAx.plot([],[], lw=2) #TEMP, will delete later
-        self.lineAx = self.figure.add_subplot(1, 2, 2)
-        
-        self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 
-                                           duration, self.simulation.populationSize)
-    
-    def show(self):
-        animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
-                                  frames=self.duration, blit=True, interval=200)
-        plt.show()
-        
-    def init(self):
-        # self.gridLine.set_data([0],[0])
-        return self.LineAnimation.init()
-    
-    def update(self, framenum):
-        self.simulation.updateSubPopulation()
-        # grid update
-        return self.LineAnimation.update(self.simulation.collectData())
-        
-    
-    
-    
-    
-    
-
 
 
 class LineAnimation: 
@@ -138,8 +115,23 @@ class LineAnimation:
         Line.append(self.lineI)
         return Line
     
-    
-    
+
+
+'''
+class animation():
+    def __init__(self):
+        self.comment = "initialise here"
+        
+    #NOTE: Not sure where this goes yet
+    def get_Colours(self):
+        # Creates a grid of colours to be plotted 
+        colour_grid = np.zeros((self.width,self.height,3),int)
+        for status, statusLet in self.gridState :
+            colour = self.Colours[status]
+            colour_rgb = self.COLOURMAP_RGB[colour]
+            colour_grid[self.state == statusLet] = colour_rgb
+            return colour_grid
+'''
     
         
         
