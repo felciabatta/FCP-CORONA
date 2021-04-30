@@ -57,7 +57,7 @@ class AnimationTemp:
     
     def show(self):
         animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
-                                  frames=self.duration, blit=True, interval=200)
+                                  frames=self.duration, blit=True, interval=150)
         plt.show()
         
     def init(self):
