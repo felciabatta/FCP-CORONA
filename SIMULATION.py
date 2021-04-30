@@ -233,40 +233,9 @@ class subPopulationSim:
                                            'Quarantining',
                                            'Vaccinated'])
         # NOTE: rather than printing within method, do nothing, so have option to
-        #       print outside of method 
-        print(f"{data}\n------------------------------------------------")
-
-        return data
-        
-
-    def Percentage(self):
-        # NOTE: Can reduce amount of code as first 23 lines repeated from above
-        #       Also could include % in same table as absolute values
-        susceptable = []
-        infected = []
-        recovered = []
-        travelled = []
-        quarantined = []
-        dead = []
-        vaccinated = []
-        for i in range(len(self.gridState)):
-            for j in range(len(self.gridState[i])):
-                if self.gridState[i, j] == 'I':
-                    infected += 'I'
-                elif self.gridState[i, j] == 'S':
-                    susceptable += 'S'
-                elif self.gridState[i, j] == 'R':
-                    recovered += 'R'
-                elif self.gridState[i, j] == 'D':
-                    dead += 'D'
-                elif self.gridState[i, j] == 'T':
-                    travelled += 'T'
-                elif self.gridState[i, j] == 'Q':
-                    quarantined += 'Q'
-                elif self.gridState[i, j] == 'V':
-                    vaccinated += 'V'
-
-        PopulationTotal = len(infected) + len(susceptable) + len(recovered) + len(dead) + len(vaccinated) + len(quarantined) + len(travelled)
+        #       print outside of method
+        PopulationTotal = len(infected) + len(susceptable) + len(recovered) + len(dead) + len(vaccinated) + len(
+            quarantined) + len(travelled)
         print(f"Total population: {PopulationTotal}")
 
         PercentInfected = 100 * len(infected) / PopulationTotal
@@ -277,18 +246,19 @@ class subPopulationSim:
         PercentQuarantined = 100 * len(quarantined) / PopulationTotal
         PercentTravelled = 100 * len(travelled) / PopulationTotal
 
-        data2 = pd.DataFrame([PercentInfected, PercentSusceptable, PercentRecovered, PercentDead,
-                              PercentVaccinated, PercentQuarantined, PercentTravelled],
-                             columns=["Population State Percentages (%)"],
-                             index=['Percent Infected',
-                                    'Percent Susceptable',
-                                    'Percent Recovered',
-                                    'Percent Dead',
-                                    'Percent Vaccinated',
-                                    'Percent Quarantined',
-                                    'Percent Travelled'
-                                    ])
-        return data2
+        data2 = pd.Series([PercentSusceptable, PercentInfected, PercentRecovered, PercentDead, PercentTravelled,
+                           PercentQuarantined, PercentVaccinated], name='Population State Percentages (%)',
+                          index=['Susceptible',
+                                   'Infected',
+                                   'Recovered',
+                                   'Dead',
+                                   'Travelling',
+                                   'Quarantining',
+                                   'Vaccinated'])
+        data['Population State Percentages (%)'] = data2
+
+        print(f"{data}\n------------------------------------------------")
+
 
     def __str__(self):
         """for use in print function: prints current grid state"""
@@ -428,10 +398,12 @@ def simTest4(days, w = 10):   # This will show how the states will vary with qua
     bristol.randomInfection()
     print("DAY 0:")
     print(bristol.gridState)  # Initial grid state (effectively this is day 0)
+    bristol.collectData()
     for day in range(days):
         bristol.updateSubPopulation()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
+        bristol.collectData()
         t.sleep(1)
 
 
@@ -493,7 +465,6 @@ def SimTestVaccine(days):
 
 # Only 1/5 of symptomatic people DON'T self isolate
 # as of April 1st, 1/100 HAVE covid
-
 
 
 
