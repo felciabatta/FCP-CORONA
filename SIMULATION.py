@@ -10,8 +10,8 @@ class subPopulationSim:
     which can be updated each day to determine new status of each person
     """
 
-    def __init__(self, width=5, height=5, pDeath=0.001,
-                 pInfection=0.5, pRecovery=0.1, pReinfection=0.005,
+    def __init__(self, width=5, height=5, pDeath=0.0128,
+                 pInfection=0.3, pRecovery=0.1, pReinfection=0.005,
                  pTravel=0.01, pQuarantine=0.15, city='City',
                  pEndQuarantine=0.05, pVaccination = 0.0001
                  ):
@@ -454,8 +454,8 @@ def customSimTest(days):
 
 
 def SimTestVaccine(days):
-    
-    subPop = subPopulationSim(pVaccination = 0.0005, width = 100, height = 100)
+    """The probability of a person being vaccinated starts off as very rare, then increases as time goes on to a maximum of 10% """
+    subPop = subPopulationSim(pVaccination = 0.0005, width = 15, height = 15)
     subPop.randomInfection()
     print("DAY 0:")
     print(subPop.gridState) 
@@ -468,7 +468,9 @@ def SimTestVaccine(days):
         subPop.updateSubPopulation()
         print(f"DAY {day + 1}:")
         print(f"{subPop.gridState} \n")  
-        subPop.collectData()
+        print(subPop.collectData())
+        
+        
         
         
         
