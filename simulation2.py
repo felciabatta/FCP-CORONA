@@ -9,17 +9,22 @@ class person:
     def __init__(self, status="S"):
         
         self.status = status
+        
         self.previouslyInfected = False
         self.quarantining = False
         self.vaccinated = False
         self.travelling = False
+        
         self.daysInfected = 0
+        self.pQuarantine = 0.01
+        self.pVaccinate = 0.01
+        self.pTravel = 0.01
+        self.pDeath = 0
+        self.pRecovery = 0
         
     def updateProbabilities(self):
         
         if self.status == "S":
-            # self.infectedNeighbours = self.neighbours.count('I')
-            # self.pInfection = self.infectedNeighbours * 0.01
             self.pInfection = self.neighbours.count("I") * 0.01
             
               
@@ -27,8 +32,18 @@ class person:
             if self.daysInfected >= 4 :
                 if self.daysInfected <= 10:
                     self.pDeath = (self.daysInfected - 3) * 0.01
+                    self.pRecovery = (self.daysInfected - 3) * 0.01
                 else:
                     self.pDeath = 0.07
+                    self.pRecovery = 0.07
+                    
+        if self.quarantining:
+            if self.daysQuarantining >= 4 :
+                if self.daysQuarantining <= 10:
+                    self.pEndQuarantine = (self.daysQuarantining - 3) * 0.01
+                else:
+                    self.pEndQuarantine= 0.07
+            
               
     def updateStatus(self):
         """determine new status of a person"""
@@ -64,7 +79,7 @@ class person:
                 
         # quarantined
         # can recover, die, end quarantine early or remain unchanged
-        elif self.quarantining:
+        if self.quarantining:
             
             self.daysQuarantining += 1
             
@@ -83,23 +98,11 @@ class subPopulationSim:
     which can be updated each day to determine new status of each person
     """
 
-    def __init__(self, width=5, height=5, pDeath=0.001,
-                  pRecovery=0.1, pReinfection=0.005,
-                 pTravel=0.01, pQuarantine=0.15, city='City',
-                 pEndQuarantine=0.05
-                 ):
+    def __init__(self, width=5, height=5, city='City'):
 
         self.city = city
         self.width = width
         self.height = height
-
-        self.pEndQuarantine = pEndQuarantine
-        self.pDeath = pDeath
-        self.pRecovery = pRecovery
-        self.pReinfection = pReinfection
-        self.pTravel = pTravel
-        self.pQuarantine = pQuarantine
-        self.pInfectedByTraveller = 0
 
         self.day = 0
 
@@ -107,7 +110,7 @@ class subPopulationSim:
         self.gridState = [[person() for x in range(width)] for y in range(height)]
 
 
-    def emptyLocation(self, pEmpty=0.01):
+    def emptyLocation(self, pEmpty=0.1):
         """randomly make some grid points empty, with probability pEmpty"""
 
         for i in range(len(self.gridState)):
@@ -126,46 +129,22 @@ class subPopulationSim:
                     self.gridState[i][j].status = "I"
                     
                     
-    def updateSubPopulation(self):
+    def nextDay(self):
         """updates whole subpopulation"""
-
+        
+        self.day += 1
+        self.identifyNeighbours()
+        
         # initialise updated grid 
         updatedGrid = self.gridState.copy()
 
-        for i in range(len(self.gridState)):
-            for j in range(len(self.gridState[i])):
-                updatedGrid[i,j] = self.updateStatus(i,j)
+        for i in self.gridState:
+            for j in i:
+                j.updateProbabilities()
+                j.updateStatus()
 
         # update gridState
         self.gridState = updatedGrid
-
-
-    def updateStatus(self, i, j):
-        
-        status = self.gridState[i, j]
-        rand = r.random()
-
-    
-        # recovered or vaccinated
-        # may become susceptible again, or remain unchanged
-        if status == 'R' or status == 'V':
-            if rand < self.pReinfection:
-                return 'S'
-            else:
-                return status
-
-        # infected traveller 
-        # may return, recover or remain unchanged
-        elif status == 'T':
-
-            if rand < self.pTravel:
-                return 'I'
-            elif rand < self.pRecovery:
-                return 'R'
-            else:
-                return status
-
-    
 
 
     def TravelCount(self):
@@ -279,16 +258,11 @@ class subPopulationSim:
 
         print(f"{data}\n------------------------------------------------")
 
-    def __str__(self):
-        """for use in print function: prints current grid state"""
-        tempGrid = np.array(self.gridState)
-        for i in range(len(tempGrid)):
-            for j in range(len(tempGrid[i])):
-                tempGrid[i][j] = str(tempGrid[i][j])
-        return str(tempGrid)
 
-    "For use in grid Animation gets a colour grid to be plotted"
+
     def get_Colours (self):
+        """For use in grid Animation gets a colour grid to be plotted"""
+            
         colour_grid =np.zeros((self.width,self.height,3),int)
         for i in range(len(self.gridState)):
           for j in range(len(self.gridState[i])):
@@ -322,6 +296,16 @@ class subPopulationSim:
                 colour_grid[i][j][2]=150
         
         return(colour_grid)
+    
+    
+    def __str__(self):
+        """for use in print function: prints current grid state"""
+        tempGrid = np.array(self.gridState)
+        for i in range(len(tempGrid)):
+            for j in range(len(tempGrid[i])):
+                tempGrid[i][j] = str(tempGrid[i][j])
+        return str(tempGrid)
+
             
 
 class populationSim:
@@ -368,11 +352,8 @@ class populationSim:
 
 
 x = subPopulationSim()
-
 x.randomInfection()
-x.identifyNeighbours()
-y = x.gridState[1][1]
-y.updateProbabilities()
-print(y, y.pInfection)
+for i in range(10):
+    x.nextDay()
 print(x)
 
