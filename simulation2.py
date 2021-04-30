@@ -12,16 +12,65 @@ class person:
         self.previouslyInfected = False
         self.quarantining = False
         self.vaccinated = False
+        self.travelling = False
         self.pInfection = 0
         self.neighbours = 0
         self.infectedNeighbours = 0
         
-    def UpdatePInfection(self):
+    def updatePInfection(self):
     
         self.infectedNeighbours = self.neighbours.count('I')
         self.pInfection = self.infectedNeighbours * 0.01
         
-    
+    def updateProbabilities(self):
+        if self.daysInfected >= 4 :
+            if self.daysInfected <= 10:
+                self.pDeath = (10 - self.daysInfected) * 0.01
+            else:
+                self.pDeath = 0.6
+              
+    def updateStatus(self):
+        """determine new status of a person"""
+        rand = r.random()
+        
+        # susceptible 
+        # can be infected by surrounding people or infected travellers
+        if self.status == "S":
+            
+            if rand < self.pInfection:
+                self.status = "I"
+            
+            elif rand < self.pVaccinate:
+                self.vaccinated == True
+            
+            elif rand < self.pQuarantine:
+                self.quarantining == True
+                
+        # infected 
+        # can recover, quarantine, die, travel or remain unchanged
+        elif self.status == "I":
+            
+            self.daysInfected += 1
+            
+            if  rand <self.pDeath:
+                self.status = "D"
+                
+            elif rand < self.pTravel:
+                self.travelling == True
+            
+            elif rand < self.pRecovery:
+                self.status == "S"
+                
+        # quarantined
+        # can recover, die, end quarantine early or remain unchanged
+        elif self.quarantining:
+            
+            self.daysQuarantining += 1
+            
+            if rand < self.pEndQuarantine:
+                self.quarantining == False
+            
+            
     def __str__(self):
         return self.status
 
@@ -92,51 +141,14 @@ class subPopulationSim:
 
 
     def updateStatus(self, i, j):
-        """determine new status of a person"""
-        #!!! IMPORTANT: need to change so prob's don't overlap #!!!
+        
         status = self.gridState[i, j]
         rand = r.random()
 
-        # susceptible 
-        # can be infected by surrounding people or infected travellers
-        if status == 'S':
-
-            if rand < self.updateProb(i,j):
-                return 'I'
-            else:
-                return status
-
-        # infected 
-        # can recover, quarantine, die, travel or remain unchanged
-        elif status == 'I':
-
-            if rand < self.pDeath:
-                return 'D'
-            elif rand < self.pTravel:
-                return 'T'
-            elif rand < self.pRecovery:
-                return 'R'
-            elif r.random() < self.pQuarantine:
-                return 'Q'
-            else:
-                return status
-
-        # quarantined
-        # can recover, die, end quarantine early or remain unchanged
-        elif status == 'Q':
-
-            if rand < self.pDeath:
-                return 'D'
-            elif rand < self.pEndQuarantine:
-                return 'I'
-            elif rand < self.pRecovery:
-                return 'R'
-            else:
-                return status
-
+    
         # recovered or vaccinated
         # may become susceptible again, or remain unchanged
-        elif status == 'R' or status == 'V':
+        if status == 'R' or status == 'V':
             if rand < self.pReinfection:
                 return 'S'
             else:
@@ -153,10 +165,7 @@ class subPopulationSim:
             else:
                 return status
 
-        # dead or unoccupied grid point
-        # remains unchanged
-        elif status == 'D' or status == 'N':
-            return status
+    
 
 
     def TravelCount(self):
@@ -357,17 +366,17 @@ class populationSim:
 
 
 
-# x = subPopulationSim()
-# x.identifyNeighbours()
+x = subPopulationSim()
+x.identifyNeighbours()
 
 
 
-# y = x.gridState[2][3]
-# y.status = "I"
-# print(y.status)
-# print(y)
-# print(x.gridState[1][3].neighbours[])
-# print(x)
+y = x.gridState[2][3]
+y.status = "I"
+print(y.status)
+print(y)
+print(x.gridState[1][3].neighbours[2])
+print(x)
 
 
 # x = [person(),person()]
