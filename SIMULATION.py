@@ -36,7 +36,7 @@ class subPopulationSim:
         self.populationSize=width*height
 
         # initalise grid of statuses, with susceptible people
-        self.gridState = np.full([width, height], "S")
+        self.gridState = np.full([width, height], 'S')
 
 
     def emptyLocation(self, pEmpty):
@@ -54,8 +54,8 @@ class subPopulationSim:
 
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i,j].status == 'S' and r.random() < pInitialInfection:
-                    self.gridState[i,j].status = 'I'
+                if self.gridState[i,j] == 'S' and r.random() < pInitialInfection:
+                    self.gridState[i,j] = 'I'
 
 
     def randomVaccination(self):
