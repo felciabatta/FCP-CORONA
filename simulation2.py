@@ -13,21 +13,22 @@ class person:
         self.quarantining = False
         self.vaccinated = False
         self.travelling = False
-        self.pInfection = 0
-        self.neighbours = 0
-        self.infectedNeighbours = 0
-        
-    def updatePInfection(self):
-    
-        self.infectedNeighbours = self.neighbours.count('I')
-        self.pInfection = self.infectedNeighbours * 0.01
+        self.daysInfected = 0
         
     def updateProbabilities(self):
-        if self.daysInfected >= 4 :
-            if self.daysInfected <= 10:
-                self.pDeath = (10 - self.daysInfected) * 0.01
-            else:
-                self.pDeath = 0.6
+        
+        if self.status == "S":
+            # self.infectedNeighbours = self.neighbours.count('I')
+            # self.pInfection = self.infectedNeighbours * 0.01
+            self.pInfection = self.neighbours.count("I") * 0.01
+            
+              
+        elif self.status == "I":
+            if self.daysInfected >= 4 :
+                if self.daysInfected <= 10:
+                    self.pDeath = (self.daysInfected - 3) * 0.01
+                else:
+                    self.pDeath = 0.07
               
     def updateStatus(self):
         """determine new status of a person"""
@@ -83,7 +84,7 @@ class subPopulationSim:
     """
 
     def __init__(self, width=5, height=5, pDeath=0.001,
-                 pInfection=0.5, pRecovery=0.1, pReinfection=0.005,
+                  pRecovery=0.1, pReinfection=0.005,
                  pTravel=0.01, pQuarantine=0.15, city='City',
                  pEndQuarantine=0.05
                  ):
@@ -94,7 +95,6 @@ class subPopulationSim:
 
         self.pEndQuarantine = pEndQuarantine
         self.pDeath = pDeath
-        self.pInfection = pInfection
         self.pRecovery = pRecovery
         self.pReinfection = pReinfection
         self.pTravel = pTravel
@@ -117,7 +117,7 @@ class subPopulationSim:
                     # Note: numpy changes None to 'N'
 
 
-    def randomInfection(self, pInitialInfection=0.05):
+    def randomInfection(self, pInitialInfection=0.5):
         """randomly infect, with probability pInitialInfection"""
 
         for i in range(len(self.gridState)):
@@ -205,7 +205,7 @@ class subPopulationSim:
                     jMax = j+2
             
                     tempGrid = np.array(self.gridState)
-                    tempGrid[i,j] = None
+                    # tempGrid[i,j] = None
             
                     localGrid = [list(row) for row in tempGrid[iMin:iMax,jMin:jMax]]
                    
@@ -214,6 +214,7 @@ class subPopulationSim:
                     self.gridState[i][j].neighbours=[]
                     for row in localGrid:
                         self.gridState[i][j].neighbours += row
+                    self.gridState[i][j].neighbours = [person.status for person in self.gridState[i][j].neighbours if person != None] 
                
 
     def collectData(self):
@@ -367,33 +368,11 @@ class populationSim:
 
 
 x = subPopulationSim()
+
+x.randomInfection()
 x.identifyNeighbours()
-
-
-
-y = x.gridState[2][3]
-y.status = "I"
-print(y.status)
-print(y)
-print(x.gridState[1][3].neighbours[2])
+y = x.gridState[1][1]
+y.updateProbabilities()
+print(y, y.pInfection)
 print(x)
 
-
-# x = [person(),person()]
-# y = person()
-# z = x[0]
-# z.status="d"
-# y.status='I'
-# print(x,y,z)
-
-
-
-# x = subPopulationSim()
-# x.identifyNeighbours()
-
-
-# z = x.gridState[1][1]
-# print(z.neighbours[2])
-# x.emptyLocation()
-# x.randomInfection()
-# print(x)
