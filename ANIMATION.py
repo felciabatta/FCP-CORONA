@@ -67,8 +67,13 @@ class AnimationTemp:
     def update(self, framenum):
         self.simulation.updateSubPopulation()
         # grid update
-        self.LineAnimation.update(self.simulation.collectData())
-        return self.LineAnimation.line,
+        return self.LineAnimation.update(self.simulation.collectData())
+        
+    
+    
+    
+    
+    
 
 
 
@@ -82,7 +87,10 @@ class LineAnimation:
         self.axes = axes
         self.duration = duration
         # NOTE will need a line for each state, just temporary
-        self.line, = self.axes.plot([],[],lw=2) 
+        self.lineS, = self.axes.plot([],[],lw=2) 
+        self.lineR, = self.axes.plot([],[],lw=2)
+        self.lineD, = self.axes.plot([],[],lw=2)
+        self.lineI, = self.axes.plot([],[],lw=2)
         self.yLim=populationSize
         
         # prepare x data
@@ -99,8 +107,17 @@ class LineAnimation:
         """Initialise LineAnimation """
         self.axes.set_xlim([0, self.duration])
         self.axes.set_ylim([0, self.yLim])
-        self.line.set_data([],[])
-        return self.line,
+        Line = []
+        self.lineS.set_data([],[])
+        self.lineR.set_data([],[])
+        self.lineD.set_data([],[])
+        self.lineI.set_data([],[])
+        Line.append(self.lineS,)
+        Line.append(self.lineR,)
+        Line.append(self.lineD,)
+        Line.append(self.lineI,)
+        return Line
+        
        
     
     def update(self, data):
@@ -110,5 +127,19 @@ class LineAnimation:
         self.Recovered.append(data.loc['Recovered', 'Population'] + data.loc['Vaccinated', 'Population'])
         self.Infected.append(data.loc['Infected', 'Population'] + data.loc['Quarantining', 'Population'] + data.loc['Travelling', 'Population'])
         self.Dead.append(data.loc['Dead', 'Population'])
-        self.line.set_data(self.days, self.Susceptible)
+        Line = []
+        self.lineS.set_data(self.days, self.Susceptible)
+        self.lineR.set_data(self.days, self.Recovered)
+        self.lineD.set_data(self.days, self.Dead)
+        self.lineI.set_data(self.days, self.Infected)
+        Line.append(self.lineS,)
+        Line.append(self.lineR,)
+        Line.append(self.lineD,)
+        Line.append(self.lineI)
+        return Line
+    
+    
+    
+    
+        
         
