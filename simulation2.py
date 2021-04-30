@@ -55,7 +55,6 @@ class subPopulationSim:
         self.day = 0
 
         # initalise grid of statuses, with susceptible people
-        # self.gridState = np.full([width, height], person())
         self.gridState = [[person() for x in range(width)] for y in range(height)]
 
 
@@ -193,8 +192,8 @@ class subPopulationSim:
                     else:
                         jMin = j-1
             
-                    iMax = i+1
-                    jMax = j+1
+                    iMax = i+2
+                    jMax = j+2
             
                     tempGrid = np.array(self.gridState)
                     tempGrid[i,j] = None
@@ -218,7 +217,7 @@ class subPopulationSim:
         vaccinated = []
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i][j] == 'I':
+                if self.gridState[i][j].status == 'I':
                     infected += 'I'
                 elif self.gridState[i][j].status == 'S':
                     susceptable += 'S'
@@ -245,39 +244,8 @@ class subPopulationSim:
                                            'Vaccinated'])
         # NOTE: rather than printing within method, do nothing, so have option to
         #       print outside of method 
-        print(f"{data}\n------------------------------------------------")
-
-        return data
-        
-
-    def Percentage(self):
-        # NOTE: Can reduce amount of code as first 23 lines repeated from above
-        #       Also could include % in same table as absolute values
-        susceptable = []
-        infected = []
-        recovered = []
-        travelled = []
-        quarantined = []
-        dead = []
-        vaccinated = []
-        for i in range(len(self.gridState)):
-            for j in range(len(self.gridState[i])):
-                if self.gridState[i][j] == 'I':
-                    infected += 'I'
-                elif self.gridState[i][j].status == 'S':
-                    susceptable += 'S'
-                elif self.gridState[i][j].status == 'R':
-                    recovered += 'R'
-                elif self.gridState[i][j].status == 'D':
-                    dead += 'D'
-                elif self.gridState[i][j].status == 'T':
-                    travelled += 'T'
-                elif self.gridState[i][j].status == 'Q':
-                    quarantined += 'Q'
-                elif self.gridState[i][j].status == 'V':
-                    vaccinated += 'V'
-
-        PopulationTotal = len(infected) + len(susceptable) + len(recovered) + len(dead) + len(vaccinated) + len(quarantined) + len(travelled)
+        PopulationTotal = len(infected) + len(susceptable) + len(recovered) + len(dead) + len(vaccinated) + len(
+            quarantined) + len(travelled)
         print(f"Total population: {PopulationTotal}")
 
         PercentInfected = 100 * len(infected) / PopulationTotal
@@ -288,18 +256,18 @@ class subPopulationSim:
         PercentQuarantined = 100 * len(quarantined) / PopulationTotal
         PercentTravelled = 100 * len(travelled) / PopulationTotal
 
-        data2 = pd.DataFrame([PercentInfected, PercentSusceptable, PercentRecovered, PercentDead,
-                              PercentVaccinated, PercentQuarantined, PercentTravelled],
-                             columns=["Population State Percentages (%)"],
-                             index=['Percent Infected',
-                                    'Percent Susceptable',
-                                    'Percent Recovered',
-                                    'Percent Dead',
-                                    'Percent Vaccinated',
-                                    'Percent Quarantined',
-                                    'Percent Travelled'
-                                    ])
-        return data2
+        data2 = pd.Series([PercentSusceptable, PercentInfected, PercentRecovered, PercentDead, PercentTravelled,
+                           PercentQuarantined, PercentVaccinated], name='Population State Percentages (%)',
+                          index=['Susceptible',
+                                   'Infected',
+                                   'Recovered',
+                                   'Dead',
+                                   'Travelling',
+                                   'Quarantining',
+                                   'Vaccinated'])
+        data['Population State Percentages (%)'] = data2
+
+        print(f"{data}\n------------------------------------------------")
 
     def __str__(self):
         """for use in print function: prints current grid state"""
@@ -390,15 +358,16 @@ class populationSim:
 
 
 # x = subPopulationSim()
-# # x.identifyNeighbours()
+# x.identifyNeighbours()
 
 
 
-# # y = x.gridState[2,3]
-# # y.status = "I"
-# # print(y.status)
-# # print(y)
-# # print(x)
+# y = x.gridState[2][3]
+# y.status = "I"
+# print(y.status)
+# print(y)
+# print(x.gridState[1][3].neighbours[])
+# print(x)
 
 
 # x = [person(),person()]
@@ -410,12 +379,12 @@ class populationSim:
 
 
 
-x = subPopulationSim()
-x.identifyNeighbours()
+# x = subPopulationSim()
+# x.identifyNeighbours()
 
 
-z = x.gridState[1][1]
-print(z.neighbours[2])
-x.emptyLocation()
-x.randomInfection()
-print(x)
+# z = x.gridState[1][1]
+# print(z.neighbours[2])
+# x.emptyLocation()
+# x.randomInfection()
+# print(x)
