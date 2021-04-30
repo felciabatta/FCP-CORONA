@@ -15,17 +15,26 @@ class person:
         self.vaccinated = False
         self.travelling = False
         
+        self.initializeValues()
+        
+    def initializeValues(self):
+        
         self.daysInfected = 0
+        self.daysQuarantining = 0
         self.pQuarantine = 0.01
         self.pVaccinate = 0.01
         self.pTravel = 0.01
         self.pDeath = 0
         self.pRecovery = 0
+        self.pEndQuarantine = 0
         
     def updateProbabilities(self):
         
         if self.status == "S":
             self.pInfection = self.neighbours.count("I") * 0.01
+            
+            if self.previouslyInfected:
+                self.pVaccinate = 0.1
             
               
         elif self.status == "I":
@@ -33,9 +42,11 @@ class person:
                 if self.daysInfected <= 10:
                     self.pDeath = (self.daysInfected - 3) * 0.01
                     self.pRecovery = (self.daysInfected - 3) * 0.01
+                    self.pQuarantine = (self.daysInfected - 3) * 0.01
                 else:
                     self.pDeath = 0.07
                     self.pRecovery = 0.07
+                    self.pQuarantine = 0.07
                     
         if self.quarantining:
             if self.daysQuarantining >= 4 :
@@ -47,20 +58,19 @@ class person:
               
     def updateStatus(self):
         """determine new status of a person"""
-        rand = r.random()
         
         # susceptible 
         # can be infected by surrounding people or infected travellers
         if self.status == "S":
             
-            if rand < self.pInfection:
+            if r.random() < self.pInfection:
                 self.status = "I"
             
-            elif rand < self.pVaccinate:
-                self.vaccinated == True
+            elif r.random() < self.pVaccinate:
+                self.vaccinated = True
             
-            elif rand < self.pQuarantine:
-                self.quarantining == True
+            elif r.random() < self.pQuarantine:
+                self.quarantining = True
                 
         # infected 
         # can recover, quarantine, die, travel or remain unchanged
@@ -68,14 +78,16 @@ class person:
             
             self.daysInfected += 1
             
-            if  rand <self.pDeath:
+            if r.random() < self.pRecovery:
+                self.status = "S"
+            
+            elif  r.random() < self.pDeath:
                 self.status = "D"
                 
-            elif rand < self.pTravel:
-                self.travelling == True
+            elif r.random() < self.pTravel:
+                self.travelling = True
             
-            elif rand < self.pRecovery:
-                self.status == "S"
+
                 
         # quarantined
         # can recover, die, end quarantine early or remain unchanged
@@ -83,8 +95,8 @@ class person:
             
             self.daysQuarantining += 1
             
-            if rand < self.pEndQuarantine:
-                self.quarantining == False
+            if r.random() < self.pEndQuarantine:
+                self.quarantining = False
             
             
     def __str__(self):
@@ -135,19 +147,17 @@ class subPopulationSim:
         self.day += 1
         self.identifyNeighbours()
         
-        # initialise updated grid 
-        updatedGrid = self.gridState.copy()
 
         for i in self.gridState:
             for j in i:
                 j.updateProbabilities()
                 j.updateStatus()
+                
+        self.moveAround
 
-        # update gridState
-        self.gridState = updatedGrid
 
 
-    def TravelCount(self):
+    def TravelCount(self, pMove):
         """ determines amount of travelled people in the grid at any one time"""
         #convert grid into a list of lists of person states
         Grid = [list(row) for row in self.gridState]
@@ -160,6 +170,12 @@ class subPopulationSim:
         TravelCount = Statuses.count('T')
 
         return TravelCount
+    
+    def moveAround(self):
+        for i in self.gridState:
+            for j in i:
+                if r.random() < self.pMove:
+                    j
 
 
     def identifyNeighbours(self):
@@ -193,7 +209,7 @@ class subPopulationSim:
                     self.gridState[i][j].neighbours=[]
                     for row in localGrid:
                         self.gridState[i][j].neighbours += row
-                    self.gridState[i][j].neighbours = [person.status for person in self.gridState[i][j].neighbours if person != None] 
+                    self.gridState[i][j].neighbours = [person.status for person in self.gridState[i][j].neighbours if person != None and not person.quarantining] 
                
 
     def collectData(self):
@@ -353,7 +369,8 @@ class populationSim:
 
 x = subPopulationSim()
 x.randomInfection()
-for i in range(10):
+for i in range(20):
     x.nextDay()
-print(x)
+    print(x)
+print(x.gridState[1][2].pQuarantine, x.gridState[1][2].daysInfected, x.gridState[1][2].quarantining)
 
