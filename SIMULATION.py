@@ -10,10 +10,10 @@ class subPopulationSim:
     which can be updated each day to determine new status of each person
     """
 
-    def __init__(self, width=5, height=5, pDeath=0.001,
-                 pInfection=0.5, pRecovery=0.1, pReinfection=0.005,
+    def __init__(self, width=5, height=5, pDeath=0.0128,
+                 pInfection=0.3, pRecovery=0.1, pReinfection=0.005,
                  pTravel=0.01, pQuarantine=0.15, city='City',
-                 pEndQuarantine=0.05
+                 pEndQuarantine=0.05, pVaccination = 0.0001
                  ):
 
         self.city = city
@@ -28,8 +28,12 @@ class subPopulationSim:
         self.pTravel = pTravel
         self.pQuarantine = pQuarantine
         self.pInfectedByTraveller = 0
+        self.pVaccination = pVaccination
 
         self.day = 0
+        
+        # NOTE this includes empty spaces, but mainly for y axis limits
+        self.populationSize=width*height
 
         # initalise grid of statuses, with susceptible people
         self.gridState = np.full([width, height], "S")
@@ -54,13 +58,13 @@ class subPopulationSim:
                     self.gridState[i,j].status = 'I'
 
 
-    def randomVaccination(self, pVaccination=0.05):
-        """randomly vaccinate, with probability pVaccination"""
+    def randomVaccination(self):
+        """randomly infect, with probability pInitialInfection"""
 
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i,j].status == 'S' and r.random() < pVaccination:
-                    self.gridState[i,j].status = 'V'
+                if self.gridState[i,j] == 'S' and r.random() < self.pVaccination:
+                    self.gridState[i,j] = 'V'
 
 
     def updateSubPopulation(self):
@@ -75,6 +79,9 @@ class subPopulationSim:
 
         # update gridState
         self.gridState = updatedGrid
+        
+        # update day
+        self.day += 1
 
 
     def updateStatus(self, i, j):
@@ -196,7 +203,11 @@ class subPopulationSim:
 
         return pCombinedInfection
 
+
     def collectData(self):
+        """Counts number of people in each state, and displays in a table
+           This will aid in creating line animation & plots"""
+           
         susceptable = []
         infected = []
         recovered = []
@@ -204,6 +215,7 @@ class subPopulationSim:
         quarantined = []
         dead = []
         vaccinated = []
+        
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
                 if self.gridState[i, j] == 'I':
@@ -231,11 +243,10 @@ class subPopulationSim:
                                            'Travelling',
                                            'Quarantining',
                                            'Vaccinated'])
-        # NOTE: rather than printing within method, do nothing, so have option to
-        #       print outside of method
+        
         PopulationTotal = len(infected) + len(susceptable) + len(recovered) + len(dead) + len(vaccinated) + len(
             quarantined) + len(travelled)
-        print(f"Total population: {PopulationTotal}")
+        # print(f"Total population: {PopulationTotal}")
 
         PercentInfected = 100 * len(infected) / PopulationTotal
         PercentSusceptable = 100 * len(susceptable) / PopulationTotal
@@ -245,7 +256,7 @@ class subPopulationSim:
         PercentQuarantined = 100 * len(quarantined) / PopulationTotal
         PercentTravelled = 100 * len(travelled) / PopulationTotal
 
-        data2 = pd.Series([PercentSusceptable, PercentInfected, PercentRecovered, PercentDead, PercentTravelled,
+        PercentData = pd.Series([PercentSusceptable, PercentInfected, PercentRecovered, PercentDead, PercentTravelled,
                            PercentQuarantined, PercentVaccinated], name='Population State Percentages (%)',
                           index=['Susceptible',
                                    'Infected',
@@ -254,17 +265,23 @@ class subPopulationSim:
                                    'Travelling',
                                    'Quarantining',
                                    'Vaccinated'])
-        data['Population State Percentages (%)'] = data2
+        
+        data['Population State Percentages (%)'] = PercentData
 
-        print(f"{data}\n------------------------------------------------")
+        # NOTE: rather than printing within method, just return data, 
+        #       so have option to print outside of method
+        # print(f"{data}\n------------------------------------------------")
+        return data
 
 
     def __str__(self):
         """for use in print function: prints current grid state"""
         return str(self.gridState)
 
-    "For use in grid Animation gets a colour grid to be plotted"
+    
     def get_Colours (self):
+        """For use in grid Animation gets a colour grid to be plotted"""
+        
         colour_grid =np.zeros((self.width,self.height,3),int)
         for i in range(len(self.gridState)):
           for j in range(len(self.gridState[i])):
@@ -300,12 +317,14 @@ class subPopulationSim:
         return(colour_grid)
             
 
+    
+
+
 class populationSim:
     """
     simulates multiple subpopulations and people travelling between them
     """
-
-
+    
     def __init__(self, N=5, pInfection = 0.5):
         # NOTE: Can change to input list of cities, to make more generalised,
         #       then for methods, just loop through list. 
@@ -432,6 +451,32 @@ def customSimTest(days):
         print(f"DAY {day + 1}:")
         print(f"{subPop.gridState} \n")  # grid state after x days
         subPop.collectData()
+
+
+def SimTestVaccine(days):
+    """The probability of a person being vaccinated starts off as very rare, then increases as time goes on to a maximum of 10% """
+    subPop = subPopulationSim(pVaccination = 0.0005, width = 15, height = 15)
+    subPop.randomInfection()
+    print("DAY 0:")
+    print(subPop.gridState) 
+    subPop.collectData()
+    for day in range(days):
+        if subPop.pVaccination < 0.01:
+            subPop.pVaccination = subPop.pVaccination * 1.05
+        subPop.randomVaccination()    
+        t.sleep(1)
+        subPop.updateSubPopulation()
+        print(f"DAY {day + 1}:")
+        print(f"{subPop.gridState} \n")  
+        print(subPop.collectData())
+        
+        
+        
+        
+        
+
+
+
 
 # RESEARCH ----------------------------------------------------------------------
 

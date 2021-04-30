@@ -2,6 +2,7 @@
 
 import argparse
 from SIMULATION import *
+from ANIMATION import *
 
 def main(*args):
 
@@ -66,6 +67,11 @@ def main(*args):
         simTest4(10)
     else:
         print("Nothing to do yet")
+    
+    sim = subPopulationSim(100,100)
+    sim.randomInfection(0.05)
+    ani = AnimationTemp(sim,50)
+    ani.show()
         
 
 
