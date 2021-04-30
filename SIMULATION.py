@@ -3,7 +3,7 @@ import numpy.random as r
 import time as t
 import pandas as pd
 
-
+   
 class subPopulationSim:
     """
     creates a 'sub-population' e.g. a city of people, 
@@ -36,7 +36,7 @@ class subPopulationSim:
         self.populationSize=width*height
 
         # initalise grid of statuses, with susceptible people
-        self.gridState = np.full([width, height], 'S')
+        self.gridState = np.full([width, height], "S")
 
 
     def emptyLocation(self, pEmpty):
@@ -54,8 +54,8 @@ class subPopulationSim:
 
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i,j] == 'S' and r.random() < pInitialInfection:
-                    self.gridState[i,j] = 'I'
+                if self.gridState[i,j].status == 'S' and r.random() < pInitialInfection:
+                    self.gridState[i,j].status = 'I'
 
 
     def randomVaccination(self):
@@ -408,6 +408,7 @@ def simTest3(days, w = 10):
         t.sleep(0.1)
 
 
+
 def simTest4(days, w = 10):   # This will show how the states will vary with quarantine with no vaccination.
     bristol = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.2, 'Bristol', 0.05)
     bristol.randomInfection()
@@ -435,7 +436,6 @@ def createSubPop():
     pEndQuarantine = float(input("Input the probability of the person ending the quarantine early: "))
     return subPopulationSim(w, w,pDeath, pInfection, pRecovery, pReinfection, pTravel, pQuarantine, city,
                             pEndQuarantine)
-
 
 
 def customSimTest(days):
