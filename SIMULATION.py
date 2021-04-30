@@ -13,7 +13,7 @@ class subPopulationSim:
     def __init__(self, width=5, height=5, pDeath=0.001,
                  pInfection=0.5, pRecovery=0.1, pReinfection=0.005,
                  pTravel=0.01, pQuarantine=0.15, city='City',
-                 pEndQuarantine=0.05
+                 pEndQuarantine=0.05, pVaccination = 0.0001
                  ):
 
         self.city = city
@@ -28,6 +28,7 @@ class subPopulationSim:
         self.pTravel = pTravel
         self.pQuarantine = pQuarantine
         self.pInfectedByTraveller = 0
+        self.pVaccination = pVaccination
 
         self.day = 0
 
@@ -54,12 +55,12 @@ class subPopulationSim:
                     self.gridState[i,j] = 'I'
 
 
-    def randomVaccination(self, pVaccination=0.05):
+    def randomVaccination(self):
         """randomly infect, with probability pInitialInfection"""
 
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i,j] == 'S' and r.random() < pVaccination:
+                if self.gridState[i,j] == 'S' and r.random() < self.pVaccination:
                     self.gridState[i,j] = 'V'
 
 
@@ -330,6 +331,9 @@ class subPopulationSim:
         return(colour_grid)
             
 
+    
+
+
 class populationSim:
     """
     simulates multiple subpopulations and people travelling between them
@@ -460,6 +464,30 @@ def customSimTest(days):
         print(f"DAY {day + 1}:")
         print(f"{subPop.gridState} \n")  # grid state after x days
         subPop.collectData()
+
+
+def SimTestVaccine(days):
+    
+    subPop = subPopulationSim(pVaccination = 0.0005, width = 100, height = 100)
+    subPop.randomInfection()
+    print("DAY 0:")
+    print(subPop.gridState) 
+    subPop.collectData()
+    for day in range(days):
+        if subPop.pVaccination < 0.01:
+            subPop.pVaccination = subPop.pVaccination * 1.05
+        subPop.randomVaccination()    
+        t.sleep(1)
+        subPop.updateSubPopulation()
+        print(f"DAY {day + 1}:")
+        print(f"{subPop.gridState} \n")  
+        subPop.collectData()
+        
+        
+        
+
+
+
 
 # RESEARCH ----------------------------------------------------------------------
 
