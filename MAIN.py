@@ -70,7 +70,7 @@ def main(*args):
     
     sim = subPopulationSim(100,100)
     sim.randomInfection(0.05)
-    ani = AnimationTemp(sim,100)
+    ani = Animation(sim,100)
     ani.show()
         
 
