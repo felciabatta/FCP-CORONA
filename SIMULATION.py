@@ -371,6 +371,24 @@ class populationSim:
         # self.Bristol.update()
         # self.Cardiff.update()
 
+    def collectPopData(self):
+        data = pd.DataFrame(
+            [0, 0, 0, 0, 0, 0, 0],
+            columns=["Population"], index=['Susceptible',
+                                           'Infected',
+                                           'Recovered',
+                                           'Dead',
+                                           'Travelling',
+                                           'Quarantining',
+                                           'Vaccinated'])
+        for sp in self.subPopulations:
+            data += sp.collectData()
+        print(f'{data}\n---------------------')
+
+
+
+
+
 
     def __str__(self):
         """for use in print function: prints all current grid states"""
@@ -408,18 +426,26 @@ def simTestDays(days, N=5):
     return sim
 
 def simTestPop(days):
-    cities=[subPopulationSim(15,15,city="London"),
+    cities = [subPopulationSim(15,15,city="London"),
             subPopulationSim(8,8,city="Bristol"),
             subPopulationSim(8,8,city="Manchester")]
-    sim=populationSim(subPopulations=cities)
+    sim = populationSim(subPopulations=cities)
     sim.subPopulations[0].randomInfection(pInitialInfection=0.1)
+    print("DAY: 0")
+    print(sim)
+    sim.collectPopData()
+    t.sleep(1)
 
     for day in range(days):
         sim.update()
+        print(f'DAY {day + 1}:')
         print(sim)
+        sim.collectPopData()
         t.sleep(1)
     return sim
 
+
+simTestPop(14)
 
 def simTest3(days, w = 10):
     # This will show how the states will vary with no quarantine with no vaccination.
@@ -434,7 +460,7 @@ def simTest3(days, w = 10):
         bristol.update()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
-        bristol.collectData()
+        print(bristol.collectData())
         t.sleep(0.1)
 
 
@@ -444,12 +470,12 @@ def simTest4(days, w = 10):   # This will show how the states will vary with qua
     bristol.randomInfection()
     print("DAY 0:")
     print(bristol.gridState)  # Initial grid state (effectively this is day 0)
-    bristol.collectData()
+    print(bristol.collectData())
     for day in range(days):
         bristol.update()
         print(f"DAY {day + 1}:")
         print(f"{bristol.gridState} \n")  # grid state after x days
-        bristol.collectData()
+        print(bristol.collectData())
         t.sleep(1)
 
 
@@ -464,7 +490,7 @@ def createSubPop():
     pQuarantine = float(input("Input the probability of a person going into quarantine: "))
     city = input("Input the name of the city for the sub-population: ")
     pEndQuarantine = float(input("Input the probability of the person ending the quarantine early: "))
-    return subPopulationSim(w, w,pDeath, pInfection, pRecovery, pReinfection, pTravel, pQuarantine, city,
+    return subPopulationSim(w, w, pDeath, pInfection, pRecovery, pReinfection, pTravel, pQuarantine, city,
                             pEndQuarantine)
 
 
