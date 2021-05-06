@@ -14,7 +14,7 @@ class Animation:
         self.gridAx = self.figure.add_subplot(1, 2, 1)
         self.gridLine, = self.gridAx.plot([],[], lw=2) #TEMP, will delete later
         self.lineAx = self.figure.add_subplot(1, 2, 2)
-        
+        self.GridAnimation= GridAnimation(simulation.get_Colours(),self.gridAx,simulation)
         self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 
                                            duration, self.simulation.populationSize)
     
@@ -24,14 +24,15 @@ class Animation:
         plt.show()
         
     def init(self):
-        # self.gridLine.set_data([0],[0])
+        self.gridLine.set_data([0],[0])
         return self.LineAnimation.init()
+        return self.GridAnimation.inti()
     
     def update(self, framenum):
         self.simulation.update()
         # grid update
         return self.LineAnimation.update(self.simulation.collectData())
-
+        return self.GridAnimation.update(self.simulation.get_Colours())
 
 
 class GridAnimation():
@@ -39,18 +40,23 @@ class GridAnimation():
     
     def __init__(self, axes, simulation, colour_grid):
         self.axes=axes
-        self.simulation=simulation
-        
+      
+        colour_grid=simulation.get_Colours()
+      
         self.image = self.axes.imshow(colour_grid)
         self.axes.set_xticks([])
         self.axes.set_yticks([])
-    
-    
     def init(self):
-        return self.update(0)
+        
+        return self.update(0), 
     
-    def update(self, data):
-        return[self.image]
+
+    def update(self,data):
+        
+        colour_grid = subPopulationSim().get_Colours()
+        self.image=colour_grid
+        return [self.image]
+        
     
 
 
