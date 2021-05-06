@@ -39,18 +39,23 @@ class GridAnimation():
     
     def __init__(self, axes, simulation, colour_grid):
         self.axes=axes
-        self.simulation=simulation
-        
+      
+        colour_grid=simulation.get_Colours()
+      
         self.image = self.axes.imshow(colour_grid)
         self.axes.set_xticks([])
         self.axes.set_yticks([])
-    
-    
     def init(self):
-        return self.update(0)
+        
+        return self.update(0), 
     
-    def update(self, data):
-        return[self.image]
+
+    def update(self,data):
+        
+        colour_grid = subPopulationSim().get_Colours()
+        self.image=colour_grid
+        return [self.image]
+        
     
 
 
