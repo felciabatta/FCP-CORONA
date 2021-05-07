@@ -71,14 +71,14 @@ class LineAnimation:
         self.axes = axes
         self.duration = duration
         
-        self.lineS, = self.axes.plot([],[],lw=2,label='Susceptible') 
-        self.lineR, = self.axes.plot([],[],lw=2, label='Recovered')
-        self.lineD, = self.axes.plot([],[],lw=2, label='Dead')
-        self.lineI, = self.axes.plot([],[],lw=2, label='Infected')
+        self.lineS, = self.axes.plot([],[],lw=2,label='Susceptible', color='green') 
+        self.lineR, = self.axes.plot([],[],lw=2, label='Recovered', color='blue')
+        self.lineD, = self.axes.plot([],[],lw=2, label='Dead', color='black')
+        self.lineI, = self.axes.plot([],[],lw=2, label='Infected', color='red')
         
         self.yLim=populationSize
         
-        self.axes.legend()
+        self.axes.legend(fontsize=8)
         self.axes.set_xlabel('Duration')
         self.axes.set_ylabel('Population')
         # prepare x data

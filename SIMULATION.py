@@ -12,7 +12,7 @@ class subPopulationSim:
     """
     #Uses real world probabilites when it comes to infection, death and reinfection
     def __init__(self, width=5, height=5, pDeath=0.02087,
-                 pInfection=0.3, pRecovery=0.1, pReinfection=0.005,
+                 pInfection=0.3, pRecovery=0.1, pReinfection=0.001,
                  pTravel=0.03, pQuarantine=0.15, city='City',
                  pEndQuarantine=0.05, pVaccination = 0.0001
                  ):
