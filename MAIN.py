@@ -59,20 +59,59 @@ def main(*args):
     #       could put into another file and convert to bash instead of functions?
     if args.sim==1:
         simTestDays(10)
-    if args.sim==2:
+        
+    elif args.sim==2:
         simTestPop(10)
-    if args.sim==3:
+        
+    elif args.sim==3:
         simTest3(10)
+        
     elif args.sim==4:
         simTest4(10)
+        
+    elif args.sim==5:
+        sp = subPopulationSim(100,100)
+        sp.emptyLocation(0.3)
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp])
+        
+        ani = Animation(sim,200)
+        ani.show()
+        
+    elif args.sim==6:
+        sp = subPopulationSim(50,50,pTravel=0.03)
+        sp2 = subPopulationSim(50,50,pTravel=0.03)
+        
+        sp.emptyLocation(0.3)
+        sp2.emptyLocation(0.2)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp,sp2])
+        
+        ani = Animation(sim,100)
+        ani.show()
+        
+    elif args.sim==7:
+        sp = subPopulationSim(50,50,pTravel=0.023)
+        sp2 = subPopulationSim(50,30,pTravel=0.021)
+        sp3 = subPopulationSim(50,60,pTravel=0.021)
+        sp4 = subPopulationSim(20,30,pTravel=0.021)
+        sp5 = subPopulationSim(20,20,pTravel=0.021)
+        sp6 = subPopulationSim(20,20,pTravel=0.021)
+        
+        sp.emptyLocation(0.3)
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp,sp2,sp3,sp4,sp5,sp6])
+        
+        ani = Animation(sim,100)
+        ani.show()
+        
     else:
         print("Nothing to do yet")
     
-    sim = subPopulationSim(100,100)
-    sim.emptyLocation(0.3)
-    sim.randomInfection(0.001)
-    ani = Animation(sim,200)
-    ani.show()
         
 
 

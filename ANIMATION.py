@@ -4,19 +4,30 @@ from matplotlib.animation import FuncAnimation
 
 
 class Animation:
-    """Animates simultion as a grid and line graph"""
+    """Animates simultion as a grid and line graph
+       Note: 'simulation' MUST be a populationSim class
+    """
     
     def __init__(self, simulation, duration):
         self.simulation = simulation
         self.duration = duration
         
-        self.figure = plt.figure(figsize=(8, 4))
-        self.gridAx = self.figure.add_subplot(1, 2, 1)
-        self.lineAx = self.figure.add_subplot(1, 2, 2)
+        self.figure = plt.figure(figsize=(3+2*len(simulation.subPopulations), 3))
+        self.lineAx = self.figure.add_subplot(1, len(simulation.subPopulations)+1, 1)
+        # self.gridAx = self.figure.add_subplot(1, 2, 2)
         
-        self.GridAnimation = GridAnimation(self.gridAx,simulation,simulation.get_Colours())
+        self.gridAxs = []
+        for i in range(len(simulation.subPopulations)):
+            self.gridAxs.append(self.figure.add_subplot(1,len(simulation.subPopulations)+1,i+2))
+        
         self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 
                                            duration, self.simulation.populationSize)
+        # self.GridAnimation = GridAnimation(self.gridAx,simulation,simulation.get_Colours())
+        self.GridAnimations = []
+        for i in range(len(simulation.subPopulations)):
+            self.GridAnimations.append(GridAnimation(self.gridAxs[i],simulation.subPopulations[i],
+                                                     simulation.subPopulations[i].get_Colours()))
+        
     
     def show(self):
         animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
@@ -25,16 +36,24 @@ class Animation:
         
     def init(self):
         actors=[]
-        actors+=self.GridAnimation.init()
+        # actors+=self.GridAnimation.init()
         actors+=self.LineAnimation.init()
+        
+        for ani in self.GridAnimations:
+            actors+=ani.init()
+        
         return actors
     
     def update(self, framenum):
         self.simulation.update()
         
         actors=[]
-        actors+=self.GridAnimation.update(framenum)
+        # actors+=self.GridAnimation.update(framenum)
         actors+=self.LineAnimation.update(self.simulation.collectData())
+        
+        for ani in self.GridAnimations:
+            actors+=ani.update(framenum)
+            
         return actors
 
 

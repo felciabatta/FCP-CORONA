@@ -282,7 +282,7 @@ class subPopulationSim:
     def get_Colours (self):
         """For use in grid Animation gets a colour grid to be plotted"""
         
-        colour_grid =np.zeros((self.width,self.height,3),int)
+        colour_grid = np.zeros((self.width,self.height,3),int)
         for i in range(len(self.gridState)):
           for j in range(len(self.gridState[i])):
              if  self.gridState[i, j] == 'S':
@@ -332,13 +332,6 @@ class populationSim:
     def __init__(self, subPopulations=[subPopulationSim(city="City1"),
                                        subPopulationSim(city="City2")], 
                  N=5, pInfection = 0.5):
-        # NOTE: Can change to input list of cities, to make more generalised,
-        #       then for methods, just loop through list. 
-        #       The list would be manually created outside the class
-        
-        # OLD CODE:
-        # self.Bristol = subPopulationSim(width=N, height=N, pInfection = pInfection)
-        # self.Cardiff = subPopulationSim(width=N, height=N, pInfection = pInfection)
         
         # initialise list of subpopulations, all have same pInfection,
         # all other parameters may be different
@@ -348,6 +341,11 @@ class populationSim:
         
         self.pInfectedByTraveller = 0
         self.pInfection = pInfection
+        
+        self.populationSize=0
+        for sp in self.subPopulations:
+            self.populationSize+=sp.populationSize
+        
 
 
     def populationTravel(self):
@@ -359,10 +357,6 @@ class populationSim:
             TravelledNum+=sp.TravelCount()
             GridPoints+=sp.populationSize
         
-        # OLD CODE:
-        # TravelledNum = self.Bristol.TravelCount() + self.Cardiff.TravelCount()
-        # GridPoints = self.Bristol.width*self.Bristol.height + self.Cardiff.width*self.Cardiff.height
-        
         self.pInfectedByTraveller = (TravelledNum / GridPoints)*self.pInfection
 
 
@@ -373,14 +367,9 @@ class populationSim:
         for sp in self.subPopulations:
             sp.pInfectedByTraveller=self.pInfectedByTraveller
             sp.update()
-        
-        # OLD CODE:
-        # self.Bristol.pInfectedByTraveller=self.pInfectedByTraveller
-        # self.Cardiff.pInfectedByTraveller=self.pInfectedByTraveller
-        # self.Bristol.update()
-        # self.Cardiff.update()
+    
 
-    def collectPopData(self):
+    def collectData(self):
         data = pd.DataFrame(
             [0, 0, 0, 0, 0, 0, 0],
             columns=["Population"], index=['Susceptible',
@@ -392,7 +381,8 @@ class populationSim:
                                            'Vaccinated'])
         for sp in self.subPopulations:
             data += sp.collectData()
-        print(f'{data}\n---------------------')
+            
+        return data
 
 
 
@@ -442,19 +432,17 @@ def simTestPop(days):
     sim.subPopulations[0].randomInfection(pInitialInfection=0.1)
     print("DAY: 0")
     print(sim)
-    sim.collectPopData()
+    sim.collectData()
     t.sleep(1)
 
     for day in range(days):
         sim.update()
         print(f'DAY {day + 1}:')
         print(sim)
-        sim.collectPopData()
+        sim.collectData()
         t.sleep(1)
     return sim
 
-
-#simTestPop(14)
 
 def simTest3(days, w = 10):
     # This will show how the states will vary with no quarantine with no vaccination.
