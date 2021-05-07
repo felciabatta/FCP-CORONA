@@ -69,7 +69,7 @@ def main(*args):
         print("Nothing to do yet")
     
     sim = subPopulationSim(100,100)
-    sim.randomInfection(0.05)
+    sim.randomInfection(0.001)
     ani = Animation(sim,100)
     ani.show()
         

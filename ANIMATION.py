@@ -12,27 +12,30 @@ class Animation:
         
         self.figure = plt.figure(figsize=(8, 4))
         self.gridAx = self.figure.add_subplot(1, 2, 1)
-        self.gridLine, = self.gridAx.plot([],[], lw=2) #TEMP, will delete later
         self.lineAx = self.figure.add_subplot(1, 2, 2)
-        self.GridAnimation= GridAnimation(self.gridAx,simulation,simulation.get_Colours())
+        
+        self.GridAnimation = GridAnimation(self.gridAx,simulation,simulation.get_Colours())
         self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 
                                            duration, self.simulation.populationSize)
     
     def show(self):
         animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
-                                  frames=self.duration, blit=True, interval=150)
+                                  frames=range(self.duration), blit=False, interval=150)
         plt.show()
         
     def init(self):
-        self.gridLine.set_data([0],[0])
-        return self.LineAnimation.init()
-        return self.GridAnimation.init()
+        actors=[]
+        actors+=self.GridAnimation.init()
+        actors+=self.LineAnimation.init()
+        return actors
     
     def update(self, framenum):
         self.simulation.update()
-        # grid update
-        return self.LineAnimation.update(self.simulation.collectData())
-        return self.GridAnimation.update(self.simulation.get_Colours())
+        
+        actors=[]
+        actors+=self.GridAnimation.update(framenum)
+        actors+=self.LineAnimation.update(self.simulation.collectData())
+        return actors
 
 
 class GridAnimation():
@@ -42,19 +45,18 @@ class GridAnimation():
         self.axes=axes
         self.simulation=simulation
         colour_grid=simulation.get_Colours()
-      
+        
         self.image = self.axes.imshow(colour_grid)
         self.axes.set_xticks([])
         self.axes.set_yticks([])
+        
     def init(self):
-        
-        return self.update(0), 
+        return self.update(0)
     
-
-    def update(self,data):
-        
+    def update(self, framenum):
+        day = framenum
         colour_grid = self.simulation.get_Colours()
-        self.image=colour_grid
+        self.image.set_array(colour_grid)
         return [self.image]
         
     
@@ -68,11 +70,12 @@ class LineAnimation:
     def __init__(self, data, axes, duration, populationSize):
         self.axes = axes
         self.duration = duration
-        # NOTE will need a line for each state, just temporary
+        
         self.lineS, = self.axes.plot([],[],lw=2,label='Susceptible') 
         self.lineR, = self.axes.plot([],[],lw=2, label='Recovered')
         self.lineD, = self.axes.plot([],[],lw=2, label='Dead')
         self.lineI, = self.axes.plot([],[],lw=2, label='Infected')
+        
         self.yLim=populationSize
         
         self.axes.legend()

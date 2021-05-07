@@ -525,6 +525,8 @@ def SimTestVaccine(days):
         print(f"DAY {day + 1}:")
         print(f"{subPop.gridState} \n")  
         print(subPop.collectData())
+        
+
 def TestAnimation(days,w):
  sim = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.0, 'Bristol', 0)
  sim.randomInfection(0.05)
@@ -536,10 +538,6 @@ def TestAnimation(days,w):
      ani=Animation(sim,10)
      ani.update(1)
      ani.show()
-     
-     
-     
-TestAnimation(100,100)
 
 
 # RESEARCH ----------------------------------------------------------------------
