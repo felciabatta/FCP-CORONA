@@ -14,7 +14,7 @@ class Animation:
         self.gridAx = self.figure.add_subplot(1, 2, 1)
         self.gridLine, = self.gridAx.plot([],[], lw=2) #TEMP, will delete later
         self.lineAx = self.figure.add_subplot(1, 2, 2)
-        self.GridAnimation= GridAnimation(simulation.get_Colours(),self.gridAx,simulation)
+        self.GridAnimation= GridAnimation(self.gridAx,simulation,simulation.get_Colours())
         self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 
                                            duration, self.simulation.populationSize)
     
@@ -53,7 +53,7 @@ class GridAnimation():
 
     def update(self,data):
         
-        colour_grid = simulation.get_Colours()
+        colour_grid = self.simulation.get_Colours()
         self.image=colour_grid
         return [self.image]
         
@@ -138,6 +138,5 @@ class animation():
             colour_grid[self.state == statusLet] = colour_rgb
             return colour_grid
 '''
-    
         
         
