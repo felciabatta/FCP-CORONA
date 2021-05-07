@@ -40,7 +40,7 @@ class GridAnimation():
     
     def __init__(self, axes, simulation, colour_grid):
         self.axes=axes
-      
+        self.simulation=simulation
         colour_grid=simulation.get_Colours()
       
         self.image = self.axes.imshow(colour_grid)
@@ -53,7 +53,7 @@ class GridAnimation():
 
     def update(self,data):
         
-        colour_grid = subPopulationSim().get_Colours()
+        colour_grid = simulation.get_Colours()
         self.image=colour_grid
         return [self.image]
         
