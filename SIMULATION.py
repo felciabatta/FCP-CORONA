@@ -313,6 +313,10 @@ class subPopulationSim:
                 colour_grid[i][j][0]=30
                 colour_grid[i][j][1]=100
                 colour_grid[i][j][2]=150
+             elif self.gridState[i, j] == 'N': 
+                colour_grid[i][j][0]=255
+                colour_grid[i][j][1]=255
+                colour_grid[i][j][2]=255
         
         return(colour_grid)
             
