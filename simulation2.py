@@ -174,7 +174,7 @@ class subPopulationSim:
     def moveAround(self):
         for i in self.gridState:
             for j in i:
-                if r.random() < self.pMove:
+                if r.random() < j.pMove:
                     j
 
 
