@@ -2,7 +2,7 @@ import numpy as np
 import numpy.random as r
 import time as t
 import pandas as pd
-
+from ANIMATION import *
    
 class subPopulationSim:
     """
@@ -525,7 +525,23 @@ def SimTestVaccine(days):
         print(f"DAY {day + 1}:")
         print(f"{subPop.gridState} \n")  
         print(subPop.collectData())
-
+def TestAnimation(days,w):
+ sim = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.0, 'Bristol', 0)
+ sim.randomInfection(0.05)
+ sim.randomVaccination(0.05)
+       
+ for day in range(days):
+     t.sleep(1)
+     sim.updateSubPopulation()
+     ani=Animation(sim,10)
+     ani.update(1)
+     ani.show()
+     
+     print(sim.get_Colours())
+     print(sim.gridState)
+     
+     
+TestAnimation(100,100)
 
 
 # RESEARCH ----------------------------------------------------------------------
