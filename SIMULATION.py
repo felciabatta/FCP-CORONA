@@ -445,7 +445,7 @@ def simTestPop(days):
     return sim
 
 
-simTestPop(14)
+#simTestPop(14)
 
 def simTest3(days, w = 10):
     # This will show how the states will vary with no quarantine with no vaccination.
@@ -528,17 +528,15 @@ def SimTestVaccine(days):
 def TestAnimation(days,w):
  sim = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.0, 'Bristol', 0)
  sim.randomInfection(0.05)
- sim.randomVaccination(0.05)
+ sim.randomVaccination()
        
  for day in range(days):
      t.sleep(1)
-     sim.updateSubPopulation()
+     sim.update()
      ani=Animation(sim,10)
      ani.update(1)
      ani.show()
      
-     print(sim.get_Colours())
-     print(sim.gridState)
      
      
 TestAnimation(100,100)
