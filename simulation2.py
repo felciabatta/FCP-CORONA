@@ -144,17 +144,16 @@ class subPopulationSim:
     def nextDay(self):
         """updates whole subpopulation"""
         
-        self.day += 1
         self.identifyNeighbours()
         
-
         for i in self.gridState:
             for j in i:
                 j.updateProbabilities()
                 j.updateStatus()
                 
         self.moveAround
-
+        
+        self.day += 1
 
 
     def TravelCount(self, pMove):

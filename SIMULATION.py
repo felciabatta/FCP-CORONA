@@ -2,6 +2,7 @@ import numpy as np
 import numpy.random as r
 import time as t
 import pandas as pd
+from math import inf
 from ANIMATION import *
    
 class subPopulationSim:
@@ -67,7 +68,7 @@ class subPopulationSim:
                     self.gridState[i,j] = 'V'
 
 
-    def update(self):
+    def update(self, dayV = inf, updatedVaccination = None):
         """updates whole subpopulation"""
 
         # initialise updated grid 
@@ -82,6 +83,10 @@ class subPopulationSim:
         
         # update day
         self.day += 1
+        
+        # vaccination probability increases after a certain day, if a new value is specified
+        if self.day >= dayV and updatedVaccination:
+            self.pVaccination = updatedVaccination
 
 
     def updateStatus(self, i, j):
