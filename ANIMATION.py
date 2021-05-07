@@ -26,7 +26,7 @@ class Animation:
     def init(self):
         self.gridLine.set_data([0],[0])
         return self.LineAnimation.init()
-        return self.GridAnimation.inti()
+        return self.GridAnimation.init()
     
     def update(self, framenum):
         self.simulation.update()
@@ -69,12 +69,15 @@ class LineAnimation:
         self.axes = axes
         self.duration = duration
         # NOTE will need a line for each state, just temporary
-        self.lineS, = self.axes.plot([],[],lw=2) 
-        self.lineR, = self.axes.plot([],[],lw=2)
-        self.lineD, = self.axes.plot([],[],lw=2)
-        self.lineI, = self.axes.plot([],[],lw=2)
+        self.lineS, = self.axes.plot([],[],lw=2,label='Susceptible') 
+        self.lineR, = self.axes.plot([],[],lw=2, label='Recovered')
+        self.lineD, = self.axes.plot([],[],lw=2, label='Dead')
+        self.lineI, = self.axes.plot([],[],lw=2, label='Infected')
         self.yLim=populationSize
         
+        self.axes.legend()
+        self.axes.set_xlabel('Duration')
+        self.axes.set_ylabel('Population')
         # prepare x data
         self.days = [0]
         
@@ -119,6 +122,9 @@ class LineAnimation:
         Line.append(self.lineD,)
         Line.append(self.lineI)
         return Line
+
+
+    
     
 
 
