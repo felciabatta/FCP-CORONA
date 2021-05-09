@@ -24,22 +24,27 @@ def main(*args):
     parser.add_argument('--recovery', metavar='P', type=float, default=0.1,
                         help='Probability of recovery (per day)')
     
-    parser.add_argument('--infection', metavar='P', type=float, default=0.1,
+    parser.add_argument('--infection', metavar='P', type=float, default=0.3,
                         help='Probability of infecting a neighbour (per day)')
     
-    parser.add_argument('--death', metavar='P', type=float, default=0.005,
+    parser.add_argument('--reinfection', metavar='P', type=float, default=0.0005,
+                        help='Probability of losing immunity (per day)')
+                        # double check how long immunity lasts for default
+    
+    parser.add_argument('--death', metavar='P', type=float, default=0.02087,
                         help='Probability of dying when infected (per day)')
+                        # default should probably be much lower that 2%, as it is per day
     
     parser.add_argument('--cases', metavar='P', type=float, default=0.05,
                         help='Probabilty of initial infection')
     
-    parser.add_argument('--vaccinate', metavar='P', type=float, default=0.01,
+    parser.add_argument('--vaccinate', metavar='P', type=float, default=0.0001,
                         help='Probability of vaccination (per day)')
     
-    parser.add_argument('--quarantine', metavar='P', type=float, default=0.1,
+    parser.add_argument('--quarantine', metavar='P', type=float, default=0.15,
                         help='Probability of quarantine when infected (per day)')
     
-    parser.add_argument('--travel', metavar='P', type=float, default=0.1,
+    parser.add_argument('--travel', metavar='P', type=float, default=0.03,
                         help='Probability of travelling while infected (per day)')
     
     parser.add_argument('--plot', action='store_true',
@@ -109,8 +114,66 @@ def main(*args):
         ani = Animation(sim,100)
         ani.show()
         
+    elif args.sim==8:
+        """High rate of quarantine vs low quarantine"""
+        sp = subPopulationSim(100,100,pTravel=0.0,pQuarantine=1,pEndQuarantine=0)
+        sp2 = subPopulationSim(100,100,pTravel=0.0,pQuarantine=0)
+        
+        sp.emptyLocation(0.1)
+        sp2.emptyLocation(0.05)
+        
+        sp.randomInfection(0.005)
+        sp2.randomInfection(0.005)
+        
+        sim = populationSim([sp,sp2], pInfection=0.25)
+        
+        ani = Animation(sim,100)
+        ani.show()
+        
+    elif args.sim==9:
+        """Lots of vaccination vs no vaccination"""
+        sp = subPopulationSim(100,100, pVaccination=0.01)
+        sp2 = subPopulationSim(100,100, pVaccination=0.001)
+        
+        sp.randomVaccination(0.2)
+        sp2.randomVaccination(0.01)
+        
+        sp.emptyLocation(0.05)
+        sp2.emptyLocation(0.05)
+        
+        sp.randomInfection(0.005)
+        sp2.randomInfection(0.005)
+        
+        sim = populationSim([sp,sp2], pInfection=0.25)
+        
+        ani = Animation(sim,100)
+        ani.show()
+        
+    elif args.sim==10:
+        """Lots of combined measures vs no measures"""
+        sp = subPopulationSim(100,100, pVaccination=0.01, pQuarantine=0.95, 
+                              pEndQuarantine=0, pTravel=0,pRecovery=0.2)
+        sp2 = subPopulationSim(100,100, pVaccination=0.001,pQuarantine=0, pTravel=0.5,
+                               pRecovery=0.075)
+        
+        sp.randomVaccination(0.05)
+        
+        sp.emptyLocation(0.05)
+        
+        sp.randomInfection(0.005)
+        sp2.randomInfection(0.005)
+        
+        sim = populationSim([sp,sp2], pInfection=0.25)
+        
+        ani = Animation(sim,100)
+        ani.show()
+        
     else:
-        print("Nothing to do yet")
+        sp = subPopulationSim(width=args.size, height=args.size, pDeath=args.death,
+                              pInfection=args.infection, pRecovery=args.recovery, pReinfection=args.cases,
+                              pTravel=args.travel, pQuarantine=args.quarantine, city='Bristol',
+                              pEndQuarantine=0.05, pVaccination = args.vaccinate,
+                              )
     
         
 

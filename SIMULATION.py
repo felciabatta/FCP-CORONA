@@ -12,7 +12,7 @@ class subPopulationSim:
     """
     #Uses real world probabilites when it comes to infection, death and reinfection
     def __init__(self, width=5, height=5, pDeath=0.02087,
-                 pInfection=0.3, pRecovery=0.1, pReinfection=0.001,
+                 pInfection=0.3, pRecovery=0.1, pReinfection=0.0005,
                  pTravel=0.03, pQuarantine=0.15, city='City',
                  pEndQuarantine=0.05, pVaccination = 0.0001
                  ):
@@ -50,7 +50,7 @@ class subPopulationSim:
                     # Note: numpy changes None to 'N'
 
 
-    def randomInfection(self, pInitialInfection=0.01):
+    def randomInfection(self, pInitialInfection=0.05):
         """randomly infect, with probability pInitialInfection"""
 
         for i in range(len(self.gridState)):
@@ -59,12 +59,12 @@ class subPopulationSim:
                     self.gridState[i,j] = 'I'
 
 
-    def randomVaccination(self):
+    def randomVaccination(self, pRandVaccination=0.001):
         """randomly infect, with probability pInitialInfection"""
 
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i,j] == 'S' and r.random() < self.pVaccination:
+                if self.gridState[i,j] == 'S' and r.random() < pRandVaccination:
                     self.gridState[i,j] = 'V'
 
 
@@ -85,8 +85,8 @@ class subPopulationSim:
         self.day += 1
         
         # vaccination probability increases after a certain day, if a new value is specified
-        if self.day >= dayV and updatedVaccination:
-            self.pVaccination = updatedVaccination
+        # if self.day >= dayV and updatedVaccination:
+        #     self.pVaccination = updatedVaccination
 
 
     def updateStatus(self, i, j):
@@ -96,11 +96,13 @@ class subPopulationSim:
         rand = r.random()
 
         # susceptible 
-        # can be infected by surrounding people or infected travellers
+        # can be infected by surrounding people, infected travellers or be vaccinated
         if status == 'S':
-
-            if rand < self.updateProb(i,j):
+            personalpInfection = self.updateProb(i,j)
+            if rand < personalpInfection:
                 return 'I'
+            elif rand < personalpInfection+self.pVaccination:
+                return 'V'
             else:
                 return status
 
@@ -146,7 +148,7 @@ class subPopulationSim:
 
             if rand < self.pTravel:
                 return 'I'
-            elif rand < self.pRecovery:
+            elif rand < self.pTravel+self.pRecovery:
                 return 'R'
             else:
                 return status
@@ -310,9 +312,9 @@ class subPopulationSim:
                 colour_grid[i][j][1]=50
                 colour_grid[i][j][2]=250
              elif self.gridState[i, j] == 'T': 
-                colour_grid[i][j][0]=30
-                colour_grid[i][j][1]=100
-                colour_grid[i][j][2]=150
+                colour_grid[i][j][0]=200
+                colour_grid[i][j][1]=0
+                colour_grid[i][j][2]=50
              elif self.gridState[i, j] == 'N': 
                 colour_grid[i][j][0]=255
                 colour_grid[i][j][1]=255

@@ -31,7 +31,7 @@ class Animation:
     
     def show(self):
         animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
-                                  frames=range(self.duration), blit=False, interval=150)
+                                  frames=range(self.duration), blit=True, interval=200)
         plt.show()
         
     def init(self):
