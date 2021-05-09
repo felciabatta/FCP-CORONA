@@ -12,7 +12,7 @@ class subPopulationSim:
     """
     #Uses real world probabilites when it comes to infection, death and reinfection
     def __init__(self, width=5, height=5, pDeath=0.02087,
-                 pInfection=0.3, pRecovery=0.1, pReinfection=0.0005,
+                 pInfection=0.3, pRecovery=0.1, pReinfection=0.005,
                  pTravel=0.03, pQuarantine=0.15, city='City',
                  pEndQuarantine=0.05, pVaccination = 0.0001
                  ):
@@ -116,7 +116,7 @@ class subPopulationSim:
                 return 'T'
             elif rand < self.pRecovery:
                 return 'R'
-            elif r.random() < self.pQuarantine:
+            elif rand < self.pQuarantine:
                 return 'Q'
             else:
                 return status
@@ -289,7 +289,7 @@ class subPopulationSim:
           for j in range(len(self.gridState[i])):
              if  self.gridState[i, j] == 'S':
                 colour_grid[i][j][0]=0
-                colour_grid[i][j][1]=255
+                colour_grid[i][j][1]=240
                 colour_grid[i][j][2]=0
              elif self.gridState[i, j] == 'I':
                colour_grid[i][j][0]=255
@@ -308,13 +308,13 @@ class subPopulationSim:
                 colour_grid[i][j][1]=50
                 colour_grid[i][j][2]=100
              elif self.gridState[i, j] == 'R': 
-                colour_grid[i][j][0]=50
-                colour_grid[i][j][1]=50
-                colour_grid[i][j][2]=250
+                colour_grid[i][j][0]=25
+                colour_grid[i][j][1]=25
+                colour_grid[i][j][2]=255
              elif self.gridState[i, j] == 'T': 
-                colour_grid[i][j][0]=200
-                colour_grid[i][j][1]=0
-                colour_grid[i][j][2]=50
+                colour_grid[i][j][0]=30
+                colour_grid[i][j][1]=100
+                colour_grid[i][j][2]=150
              elif self.gridState[i, j] == 'N': 
                 colour_grid[i][j][0]=255
                 colour_grid[i][j][1]=255
@@ -333,7 +333,7 @@ class populationSim:
     
     def __init__(self, subPopulations=[subPopulationSim(city="City1"),
                                        subPopulationSim(city="City2")], 
-                 N=5, pInfection = 0.5):
+                 pInfection = 0.5):
         
         # initialise list of subpopulations, all have same pInfection,
         # all other parameters may be different

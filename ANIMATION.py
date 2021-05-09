@@ -12,22 +12,26 @@ class Animation:
         self.simulation = simulation
         self.duration = duration
         
-        self.figure = plt.figure(figsize=(3+2*len(simulation.subPopulations), 3))
-        self.lineAx = self.figure.add_subplot(1, len(simulation.subPopulations)+1, 1)
-        # self.gridAx = self.figure.add_subplot(1, 2, 2)
+        # figure sie depends on no. of sets of axes
+        self.figure = plt.figure(figsize=(3+3*len(simulation.subPopulations), 5))
         
+        # lineaimation axes
+        self.lineAx = self.figure.add_subplot(1, len(simulation.subPopulations)+1, 1)
+        
+        # creates as many sets of grid axes as no. of cities
         self.gridAxs = []
         for i in range(len(simulation.subPopulations)):
             self.gridAxs.append(self.figure.add_subplot(1,len(simulation.subPopulations)+1,i+2))
         
+        # lineanimation of total SIRD across population
         self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 
                                            duration, self.simulation.populationSize)
-        # self.GridAnimation = GridAnimation(self.gridAx,simulation,simulation.get_Colours())
+        
+        # gridanimation of each city
         self.GridAnimations = []
         for i in range(len(simulation.subPopulations)):
             self.GridAnimations.append(GridAnimation(self.gridAxs[i],simulation.subPopulations[i],
                                                      simulation.subPopulations[i].get_Colours()))
-        
     
     def show(self):
         animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
@@ -62,6 +66,8 @@ class GridAnimation():
     
     def __init__(self, axes, simulation, colour_grid):
         self.axes=axes
+        self.axes.set_title(simulation.city)
+        
         self.simulation=simulation
         colour_grid=simulation.get_Colours()
         
@@ -98,8 +104,9 @@ class LineAnimation:
         self.yLim=populationSize
         
         self.axes.legend(fontsize=8)
-        self.axes.set_xlabel('Duration')
-        self.axes.set_ylabel('Population')
+        self.axes.set_xlabel('Day')
+        self.axes.set_ylabel('People')
+        
         # prepare x data
         self.days = [0]
         

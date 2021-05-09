@@ -18,8 +18,14 @@ def main(*args):
     parser.add_argument('--size', metavar='N', type=int, default=50,
                         help='Use a N x N simulation grid')
     
+    parser.add_argument('--cities', metavar='N', type=int, default=2,
+                        help='Create N cities')
+    
     parser.add_argument('--duration', metavar='T', type=int, default=100,
                         help='Simulate for T days')
+    
+    parser.add_argument('--distancing', metavar='P', type=float, default=0.05,
+                        help='Proportion of empty grid squares')
     
     parser.add_argument('--recovery', metavar='P', type=float, default=0.1,
                         help='Probability of recovery (per day)')
@@ -27,15 +33,16 @@ def main(*args):
     parser.add_argument('--infection', metavar='P', type=float, default=0.3,
                         help='Probability of infecting a neighbour (per day)')
     
-    parser.add_argument('--reinfection', metavar='P', type=float, default=0.0005,
+    parser.add_argument('--reinfection', metavar='P', type=float, default=0.001,
                         help='Probability of losing immunity (per day)')
                         # double check how long immunity lasts for default
     
-    parser.add_argument('--death', metavar='P', type=float, default=0.02087,
+    parser.add_argument('--death', metavar='P', type=float, default=0.002087,
                         help='Probability of dying when infected (per day)')
-                        # default should probably be much lower that 2%, as it is per day
+                        # default should probably be much lower that 2%, as it is per day,
+                        # maybe 0.2% as roughly 10 days period of infection
     
-    parser.add_argument('--cases', metavar='P', type=float, default=0.05,
+    parser.add_argument('--cases', metavar='P', type=float, default=0.001,
                         help='Probabilty of initial infection')
     
     parser.add_argument('--vaccinate', metavar='P', type=float, default=0.0001,
@@ -76,7 +83,7 @@ def main(*args):
         
     elif args.sim==5:
         sp = subPopulationSim(100,100)
-        sp.emptyLocation(0.3)
+        # sp.emptyLocation(0.3)
         sp.randomInfection(0.001)
         
         sim = populationSim([sp])
@@ -169,11 +176,26 @@ def main(*args):
         ani.show()
         
     else:
-        sp = subPopulationSim(width=args.size, height=args.size, pDeath=args.death,
-                              pInfection=args.infection, pRecovery=args.recovery, pReinfection=args.cases,
-                              pTravel=args.travel, pQuarantine=args.quarantine, city='Bristol',
-                              pEndQuarantine=0.05, pVaccination = args.vaccinate,
+        # custom simulation input, via bash
+        cities = []
+        for i in range(args.cities):
+            cities.append(subPopulationSim(width=args.size, height=args.size, pDeath=args.death,
+                              pInfection=args.infection, pRecovery=args.recovery, 
+                              pReinfection=args.reinfection, pTravel=args.travel,
+                              pQuarantine=args.quarantine, city=f"City {i+1}",
+                              pEndQuarantine=0.05, pVaccination = args.vaccinate
                               )
+                          )
+            
+        for sp in cities:
+            sp.emptyLocation(args.distancing)
+        cities[0].randomInfection(args.cases)
+        
+        
+        sim = populationSim(cities, args.infection)
+        
+        ani = Animation(sim, args.duration)
+        ani.show()
     
         
 
