@@ -2,6 +2,7 @@ import numpy as np
 import numpy.random as r
 import time as t
 import pandas as pd
+from ANIMATION import *
 
 
 class person:
@@ -117,6 +118,9 @@ class subPopulationSim:
         self.height = height
 
         self.day = 0
+        
+        # NOTE this includes empty spaces, but mainly for y axis limits
+        self.populationSize=width*height
 
         # initalise grid of statuses, with susceptible people
         self.gridState = [[person() for x in range(width)] for y in range(height)]
@@ -132,7 +136,7 @@ class subPopulationSim:
                     # Note: numpy changes None to 'N'
 
 
-    def randomInfection(self, pInitialInfection=0.5):
+    def randomInfection(self, pInitialInfection=0.05):
         """randomly infect, with probability pInitialInfection"""
 
         for i in range(len(self.gridState)):
@@ -156,7 +160,7 @@ class subPopulationSim:
         self.day += 1
 
 
-    def TravelCount(self, pMove):
+    def TravelCount(self):
         """ determines amount of travelled people in the grid at any one time"""
         #convert grid into a list of lists of person states
         Grid = [list(row) for row in self.gridState]
@@ -170,7 +174,7 @@ class subPopulationSim:
 
         return TravelCount
     
-    def moveAround(self):
+    def moveAround(self, pMove):
         for i in self.gridState:
             for j in i:
                 if r.random() < j.pMove:
@@ -212,6 +216,9 @@ class subPopulationSim:
                
 
     def collectData(self):
+        """Counts number of people in each state, and displays in a table
+           This will aid in creating line animation & plots"""
+           
         susceptable = []
         infected = []
         recovered = []
@@ -219,6 +226,7 @@ class subPopulationSim:
         quarantined = []
         dead = []
         vaccinated = []
+        
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
                 if self.gridState[i][j].status == 'I':
@@ -250,7 +258,7 @@ class subPopulationSim:
         #       print outside of method 
         PopulationTotal = len(infected) + len(susceptable) + len(recovered) + len(dead) + len(vaccinated) + len(
             quarantined) + len(travelled)
-        print(f"Total population: {PopulationTotal}")
+        # print(f"Total population: {PopulationTotal}")
 
         PercentInfected = 100 * len(infected) / PopulationTotal
         PercentSusceptable = 100 * len(susceptable) / PopulationTotal
@@ -260,7 +268,7 @@ class subPopulationSim:
         PercentQuarantined = 100 * len(quarantined) / PopulationTotal
         PercentTravelled = 100 * len(travelled) / PopulationTotal
 
-        data2 = pd.Series([PercentSusceptable, PercentInfected, PercentRecovered, PercentDead, PercentTravelled,
+        PercentData = pd.Series([PercentSusceptable, PercentInfected, PercentRecovered, PercentDead, PercentTravelled,
                            PercentQuarantined, PercentVaccinated], name='Population State Percentages (%)',
                           index=['Susceptible',
                                    'Infected',
@@ -269,16 +277,17 @@ class subPopulationSim:
                                    'Travelling',
                                    'Quarantining',
                                    'Vaccinated'])
-        data['Population State Percentages (%)'] = data2
-
-        print(f"{data}\n------------------------------------------------")
+        
+        data['(%)'] = PercentData
+        
+        return data
 
 
 
     def get_Colours (self):
         """For use in grid Animation gets a colour grid to be plotted"""
             
-        colour_grid =np.zeros((self.width,self.height,3),int)
+        colour_grid = np.zeros((self.width,self.height,3),int)
         for i in range(len(self.gridState)):
           for j in range(len(self.gridState[i])):
              if  self.gridState[i][j].status == 'S':
@@ -329,37 +338,77 @@ class populationSim:
     """
 
 
-    def __init__(self, N=5, pInfection = 0.5):
-        # NOTE: Can change to input list of cities, to make more generalised,
-        #       then for methods, just loop through list. 
-        #       The list would be manually created outside the class
-        self.Bristol = subPopulationSim(width=N, height=N, pInfection = pInfection)
-        self.Cardiff = subPopulationSim(width=N, height=N, pInfection = pInfection)
+    def __init__(self, subPopulations=[subPopulationSim(city="City1"),
+                                       subPopulationSim(city="City2")], 
+                 pInfection = 0.5):
+        
+        # initialise list of subpopulations, all have same pInfection,
+        # all other parameters may be different
+        self.subPopulations = subPopulations
+        for sp in self.subPopulations:
+            sp.pInfection = pInfection
+        
         self.pInfectedByTraveller = 0
         self.pInfection = pInfection
+        
+        self.populationSize=0
+        for sp in self.subPopulations:
+            self.populationSize+=sp.populationSize
+        
 
 
     def populationTravel(self):
         """defines probabilty of being infected by traveller"""
-        TravelledNum = self.Bristol.TravelCount() + self.Cardiff.TravelCount()
-        GridPoints = self.Bristol.width*self.Bristol.height + self.Cardiff.width*self.Cardiff.height
+        TravelledNum = 0
+        GridPoints = 0
+        
+        for sp in self.subPopulations:
+            TravelledNum+=sp.TravelCount()
+            GridPoints+=sp.populationSize
+        
         self.pInfectedByTraveller = (TravelledNum / GridPoints)*self.pInfection
 
 
-    def updatePopulation(self):
-        """assigns new traveller infection and updates each subpopulation"""
+    def update(self):
+        """assigns new traveller infection probabilty and updates each subpopulation"""
         self.populationTravel()
+        
+        for sp in self.subPopulations:
+            sp.pInfectedByTraveller=self.pInfectedByTraveller
+            sp.update()
+    
 
-        self.Bristol.pInfectedByTraveller=self.pInfectedByTraveller
-        self.Cardiff.pInfectedByTraveller=self.pInfectedByTraveller
+    def collectData(self):
+        data = pd.DataFrame(
+            [0, 0, 0, 0, 0, 0, 0],
+            columns=["Population"], index=['Susceptible',
+                                           'Infected',
+                                           'Recovered',
+                                           'Dead',
+                                           'Travelling',
+                                           'Quarantining',
+                                           'Vaccinated'])
+        for sp in self.subPopulations:
+            data += sp.collectData()
+            
+        return data
 
-        self.Bristol.updateSubPopulation()
-        self.Cardiff.updateSubPopulation()
+
+
+
 
 
     def __str__(self):
         """for use in print function: prints all current grid states"""
-        return 'Bristol:\n'+str(self.Bristol)+'\n\n'+'Cardiff:\n'+str(self.Cardiff)+'\n\n\n'
+        GridPrint=''
+        for sp in self.subPopulations:
+            GridPrint+=f'{sp.city}:\n'+str(sp)+'\n\n'
+            
+        # OLD CODE:
+        # return 'Bristol:\n'+str(self.Bristol)+'\n\n'+'Cardiff:\n'+str(self.Cardiff)+'\n\n\n'
+        
+        return GridPrint
+
 
 
 
