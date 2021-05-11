@@ -68,5 +68,3 @@ QUESTIONS:
 - 1 starting infection against multiple starting infections
 - Given India and Brazil are in such a poor state, we can ask what effect having the vaccine sooner would have taken 
 when using their infection rate and death rate in the simulation
-
-
