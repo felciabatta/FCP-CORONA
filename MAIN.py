@@ -82,9 +82,9 @@ def main(*args):
         simTest4(10)
         
     elif args.sim==5:
-        sp = subPopulationSim(100,100)
+        sp = subPopulationSim(20,20)
         # sp.emptyLocation(0.3)
-        sp.randomInfection(0.001)
+        sp.randomInfection(0.01)
         
         sim = populationSim([sp])
         
