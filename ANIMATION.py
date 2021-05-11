@@ -13,15 +13,15 @@ class Animation:
         self.duration = duration
         
         # figure sie depends on no. of sets of axes
-        self.figure = plt.figure(figsize=(3+3*len(simulation.subPopulations), 5))
+        self.figure = plt.figure(figsize=(4+4*len(simulation.subPopulations), 4))
         
         # lineaimation axes
-        self.lineAx = self.figure.add_subplot(1, len(simulation.subPopulations)+2, (1,2))
+        self.lineAx = self.figure.add_subplot(1, len(simulation.subPopulations)+1, (1,1))
         
         # creates as many sets of grid axes as no. of cities
         self.gridAxs = []
         for i in range(len(simulation.subPopulations)):
-            self.gridAxs.append(self.figure.add_subplot(1,len(simulation.subPopulations)+2,i+3))
+            self.gridAxs.append(self.figure.add_subplot(1,len(simulation.subPopulations)+1,i+2))
         
         # lineanimation of total SIRD across population
         self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 

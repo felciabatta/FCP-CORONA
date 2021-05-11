@@ -73,10 +73,11 @@ def main(*args):
     # NOTE: Need some decent names for these, 
     #       could put into another file and convert to bash instead of functions?
     if args.sim==1:
-        """Stanard simulation"""
-        sp = subPopulationSim(100,100)
+        """Standard simulation, with no measures in place,
+           demonstrates phenomenon of waves"""
+        sp = subPopulationSim(75,75,pVaccination=0)
         
-        sp.randomInfection(0.001)
+        sp.randomInfection(0.002)
         
         sim = populationSim([sp])
         
@@ -84,7 +85,8 @@ def main(*args):
         ani.show()
         
     elif args.sim==2:
-        """Many cities, to show effects of travelling"""
+        """Many cities, with small amounts of travelling between cities, 
+           leading to multiple waves"""
         sp = subPopulationSim(50,50,pTravel=0.01,city='')
         sp2 = subPopulationSim(20,20,pTravel=0.01,city='')
         sp3 = subPopulationSim(30,30,pTravel=0.01,city='')
@@ -100,6 +102,24 @@ def main(*args):
         ani.show()
         
     elif args.sim==3:
+        """Many cities, with large amounts of travelling between cities, 
+           leading to multiple waves, but tending towards an equillibrium,
+           with near-constant number of cases"""
+        sp = subPopulationSim(50,50,pTravel=0.3,city='')
+        sp2 = subPopulationSim(20,20,pTravel=0.3,city='')
+        sp3 = subPopulationSim(30,30,pTravel=0.3,city='')
+        sp4 = subPopulationSim(50,50,pTravel=0.3,city='')
+        sp5 = subPopulationSim(50,50,pTravel=0.3,city='')
+        sp6 = subPopulationSim(75,75,pTravel=0.3,city='')
+        
+        sp.randomInfection(0.002)
+        
+        sim = populationSim([sp,sp2,sp3,sp4,sp5,sp6])
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==4:
         """High rate of quarantine vs low quarantine"""
         sp = subPopulationSim(75,75,pTravel=0.0,city='High\nQuarantine',pQuarantine=1,pEndQuarantine=0)
         sp2 = subPopulationSim(75,75,pTravel=0.0,city='Medium\nQuarantine',pQuarantine=0.3,pEndQuarantine=0.1)
@@ -114,7 +134,7 @@ def main(*args):
         ani = animateIndividual(sim,args.duration)
         ani.show()
         
-    elif args.sim==4:
+    elif args.sim==5:
         """Lots of vaccination vs no vaccination"""
         sp = subPopulationSim(75,75, pVaccination=0.1, city='High Vaccination')
         sp2 = subPopulationSim(75,75, pVaccination=0.033, city='Medium Vaccination')
@@ -129,7 +149,7 @@ def main(*args):
         ani = animateIndividual(sim,args.duration)
         ani.show()
         
-    elif args.sim==5:
+    elif args.sim==6:
         """Lots of combined measures vs no measures"""
         sp = subPopulationSim(75,75, pVaccination=0.033, pQuarantine=0.95, 
                               pEndQuarantine=0.05, pTravel=0,pRecovery=0.2,
@@ -154,7 +174,7 @@ def main(*args):
         ani = animateIndividual(sim,args.duration)
         ani.show()
     
-    elif args.sim==6:
+    elif args.sim==7:
         """Many cities, to show the effects of 
            population density/social distancing"""
         sp = subPopulationSim(50,50,pTravel=0.01,city='No Distancing')
@@ -178,7 +198,7 @@ def main(*args):
         ani = animateIndividual(sim,args.duration)
         ani.show()
         
-    elif args.sim==7:
+    elif args.sim==8:
         """Many cities, to show the effects of 
            different death probabilities"""
         sp = subPopulationSim(75,75,pTravel=0.0,pDeath=0.002,city='Minimal Death')
@@ -193,6 +213,23 @@ def main(*args):
         
         ani = animateIndividual(sim,args.duration)
         ani.show()
+        
+    elif args.sim==9:
+        """No vaccination vs vaccinating after a period of time"""
+        sp = subPopulationSim(75,75, pVaccination=0.1, startVaccination=8, 
+                              city='Vaccinate after 8 days')
+        # sp2 = subPopulationSim(75,75, pVaccination=0.033, city='Medium Vaccination')
+        sp3 = subPopulationSim(75,75, pVaccination=0, city='No Vaccination')
+        
+        sp.randomInfection(0.002)
+        # sp2.randomInfection(0.002)
+        sp3.randomInfection(0.002)
+        
+        sim = populationSim([sp,sp3], pInfection=0.33)
+        
+        ani = animateIndividual(sim,args.duration)
+        ani.show()
+        
     
     else:
         # custom simulation input, via bash

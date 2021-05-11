@@ -12,9 +12,9 @@ class subPopulationSim:
     """
     #Uses real world probabilites when it comes to infection, death and reinfection
     def __init__(self, width=5, height=5, pDeath=0.002087,
-                 pInfection=0.3, pRecovery=0.1, pReinfection=0.005,
+                 pInfection=0.33, pRecovery=0.1, pReinfection=0.005,
                  pTravel=0.1, pQuarantine=0.15, city='City',
-                 pEndQuarantine=0.05, pVaccination = 0.0001
+                 pEndQuarantine=0.05, pVaccination = 0.0001, startVaccination=0
                  ):
 
         self.city = city
@@ -30,8 +30,11 @@ class subPopulationSim:
         self.pQuarantine = pQuarantine
         self.pInfectedByTraveller = 0
         self.pVaccination = pVaccination
-
+        
         self.day = 0
+        
+        # day at which vaccination begins
+        self.dayV=startVaccination
         
         # NOTE this includes empty spaces, but mainly for y axis limits
         self.populationSize=width*height
@@ -68,7 +71,7 @@ class subPopulationSim:
                     self.gridState[i,j] = 'V'
 
 
-    def update(self, dayV = inf, updatedVaccination = None):
+    def update(self):
         """updates whole subpopulation"""
 
         # initialise updated grid 
@@ -84,8 +87,8 @@ class subPopulationSim:
         # update day
         self.day += 1
         
-        # vaccination probability increases after a certain day, if a new value is specified
-        # if self.day >= dayV and updatedVaccination:
+        # # vaccination probability increases after a certain day, if a new value is specified
+        # if self.day < dayV and updatedVaccination:
         #     self.pVaccination = updatedVaccination
 
 
@@ -101,7 +104,7 @@ class subPopulationSim:
             personalpInfection = self.updateProb(i,j)
             if rand < personalpInfection:
                 return 'I'
-            elif rand < personalpInfection+self.pVaccination:
+            elif rand < personalpInfection+self.pVaccination and self.day>=self.dayV:
                 return 'V'
             else:
                 return status
