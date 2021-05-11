@@ -7,10 +7,11 @@ from ANIMATION import *
 def main(*args):
 
     """
-    Example
-    =======
-    simulation = subPopulationSim(args.size, args.size,
-                            args.recovery, args.infection, args.death)
+    Simulates an epidemic (or pandemic).
+    Note, due to the probabilistic nature of this simulation, the same starting
+    parameters may give different long term results, so running the same intial
+    conditions a few times may show a variety different effects, 
+    such as rapid herd immunity, multiple waves, endless oscilating behaviour etc.
     """    
 
     parser = argparse.ArgumentParser(description='Animate an epidemic')
@@ -228,6 +229,81 @@ def main(*args):
         sim = populationSim([sp,sp3], pInfection=0.33)
         
         ani = animateIndividual(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==101:
+        """Experimental case 1: medium recovery rate, with gradual loss of immunity,
+           and  no travelling.
+           May represent the common cold, which mutates making people susceptible again
+           Results in an endless oscilating SIR pattern and fluid like grid interation
+           Best when duration > 300"""
+           
+        sp = subPopulationSim(125,125,pRecovery=0.6,pReinfection=0.05,pTravel=0)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp])
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==102:
+        """Experimental case 2: high recovery rate, with slower loss of immunity,
+           but also high infection rate, causing more rapid spread, 
+           and with small amount of travel
+           Results in an endless oscilating SIR patter, with regular sudden outbreaks
+           Best when duration > 300"""
+           
+        sp = subPopulationSim(125,125,pRecovery=0.7, pReinfection=0.03,pTravel=0.01)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp],pInfection=0.8)
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==103:
+        """Experimental case 2: Slow but guaranteed death. This may represent covid in
+           less fortunate areas, or more likely a deadlier type of virus.
+           Note the death probability is not high, but recovery is 0, so it
+           simply takes a while to die"""
+           
+        sp = subPopulationSim(100,100,pDeath=0.1,pRecovery=0,pTravel=0)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp])
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==104:
+        """Experimental case 2: Slow but guaranteed death. This may represent covid in
+           less fortunate areas, or more likely a deadlier type of virus.
+           Note the death probability is not high, but recovery is 0, so it
+           simply takes a while to die"""
+           
+        sp = subPopulationSim(100,100,pDeath=0.1,pRecovery=0,pTravel=0,
+                              pInfection=0.0)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp])
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==105:
+        """Experimental case 2: Rapid Spread and high death"""
+           
+        sp = subPopulationSim(200,200,pDeath=0.9,pTravel=0.2)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp],pInfection=0.99)
+        
+        ani = Animation(sim,args.duration)
         ani.show()
         
     
