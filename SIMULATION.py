@@ -11,9 +11,9 @@ class subPopulationSim:
     which can be updated each day to determine new status of each person
     """
     #Uses real world probabilites when it comes to infection, death and reinfection
-    def __init__(self, width=5, height=5, pDeath=0.02087,
+    def __init__(self, width=5, height=5, pDeath=0.002087,
                  pInfection=0.3, pRecovery=0.1, pReinfection=0.005,
-                 pTravel=0.03, pQuarantine=0.15, city='City',
+                 pTravel=0.1, pQuarantine=0.15, city='City',
                  pEndQuarantine=0.05, pVaccination = 0.0001
                  ):
 
@@ -91,7 +91,7 @@ class subPopulationSim:
 
     def updateStatus(self, i, j):
         """determine new status of a person"""
-        #!!! IMPORTANT: need to change so prob's don't overlap #!!!
+        
         status = self.gridState[i, j]
         rand = r.random()
 
@@ -112,11 +112,11 @@ class subPopulationSim:
 
             if rand < self.pDeath:
                 return 'D'
-            elif rand < self.pTravel:
+            elif rand < self.pTravel+self.pDeath:
                 return 'T'
-            elif rand < self.pRecovery:
+            elif rand < self.pRecovery+self.pTravel+self.pDeath:
                 return 'R'
-            elif rand < self.pQuarantine:
+            elif rand < self.pQuarantine+self.pRecovery+self.pTravel+self.pDeath:
                 return 'Q'
             else:
                 return status
@@ -127,9 +127,9 @@ class subPopulationSim:
 
             if rand < self.pDeath:
                 return 'D'
-            elif rand < self.pEndQuarantine:
+            elif rand < self.pEndQuarantine+self.pDeath:
                 return 'I'
-            elif rand < self.pRecovery:
+            elif rand < self.pRecovery+self.pEndQuarantine+self.pDeath:
                 return 'R'
             else:
                 return status
@@ -251,7 +251,6 @@ class subPopulationSim:
         
         PopulationTotal = len(infected) + len(susceptable) + len(recovered) + len(dead) + len(vaccinated) + len(
             quarantined) + len(travelled)
-        # print(f"Total population: {PopulationTotal}")
 
         PercentInfected = 100 * len(infected) / PopulationTotal
         PercentSusceptable = 100 * len(susceptable) / PopulationTotal
@@ -312,9 +311,9 @@ class subPopulationSim:
                 colour_grid[i][j][1]=25
                 colour_grid[i][j][2]=255
              elif self.gridState[i, j] == 'T': 
-                colour_grid[i][j][0]=30
-                colour_grid[i][j][1]=100
-                colour_grid[i][j][2]=150
+                colour_grid[i][j][0]=250
+                colour_grid[i][j][1]=200
+                colour_grid[i][j][2]=0
              elif self.gridState[i, j] == 'N': 
                 colour_grid[i][j][0]=255
                 colour_grid[i][j][1]=255
