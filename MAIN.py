@@ -7,10 +7,11 @@ from ANIMATION import *
 def main(*args):
 
     """
-    Example
-    =======
-    simulation = subPopulationSim(args.size, args.size,
-                            args.recovery, args.infection, args.death)
+    Simulates an epidemic (or pandemic).
+    Note, due to the probabilistic nature of this simulation, the same starting
+    parameters may give different long term results, so running the same intial
+    conditions a few times may show a variety different effects, 
+    such as rapid herd immunity, multiple waves, endless oscilating behaviour etc.
     """    
 
     parser = argparse.ArgumentParser(description='Animate an epidemic')
@@ -73,6 +74,7 @@ def main(*args):
     # NOTE: Need some decent names for these, 
     #       could put into another file and convert to bash instead of functions?
     if args.sim==1:
+<<<<<<< HEAD
         simTestDays(10)
         
     elif args.sim==2:
@@ -91,8 +93,13 @@ def main(*args):
 
         """Stanard simulation"""
         sp = subPopulationSim(100,100)
+=======
+        """Standard simulation, with no measures in place,
+           demonstrates phenomenon of waves"""
+        sp = subPopulationSim(75,75,pVaccination=0)
+>>>>>>> b6157142de73e8a7ae4b7055d0596a779cdb7659
         
-        sp.randomInfection(0.001)
+        sp.randomInfection(0.002)
         
         sim = populationSim([sp])
         
@@ -100,7 +107,8 @@ def main(*args):
         ani.show(args.file)
         
     elif args.sim==2:
-        """Many cities, to show effects of travelling"""
+        """Many cities, with small amounts of travelling between cities, 
+           leading to multiple waves"""
         sp = subPopulationSim(50,50,pTravel=0.01,city='')
         sp2 = subPopulationSim(20,20,pTravel=0.01,city='')
         sp3 = subPopulationSim(30,30,pTravel=0.01,city='')
@@ -116,6 +124,24 @@ def main(*args):
         ani.show(args.file)
         
     elif args.sim==3:
+        """Many cities, with large amounts of travelling between cities, 
+           leading to multiple waves, but tending towards an equillibrium,
+           with near-constant number of cases"""
+        sp = subPopulationSim(50,50,pTravel=0.3,city='')
+        sp2 = subPopulationSim(20,20,pTravel=0.3,city='')
+        sp3 = subPopulationSim(30,30,pTravel=0.3,city='')
+        sp4 = subPopulationSim(50,50,pTravel=0.3,city='')
+        sp5 = subPopulationSim(50,50,pTravel=0.3,city='')
+        sp6 = subPopulationSim(75,75,pTravel=0.3,city='')
+        
+        sp.randomInfection(0.002)
+        
+        sim = populationSim([sp,sp2,sp3,sp4,sp5,sp6])
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==4:
         """High rate of quarantine vs low quarantine"""
         sp = subPopulationSim(75,75,pTravel=0.0,city='High\nQuarantine',pQuarantine=1,pEndQuarantine=0)
         sp2 = subPopulationSim(75,75,pTravel=0.0,city='Medium\nQuarantine',pQuarantine=0.3,pEndQuarantine=0.1)
@@ -130,7 +156,7 @@ def main(*args):
         ani = animateIndividual(sim,args.duration)
         ani.show(args.file)
         
-    elif args.sim==4:
+    elif args.sim==5:
         """Lots of vaccination vs no vaccination"""
         sp = subPopulationSim(75,75, pVaccination=0.1, city='High Vaccination')
         sp2 = subPopulationSim(75,75, pVaccination=0.033, city='Medium Vaccination')
@@ -145,7 +171,7 @@ def main(*args):
         ani = animateIndividual(sim,args.duration)
         ani.show()
         
-    elif args.sim==5:
+    elif args.sim==6:
         """Lots of combined measures vs no measures"""
         sp = subPopulationSim(75,75, pVaccination=0.033, pQuarantine=0.95, 
                               pEndQuarantine=0.05, pTravel=0,pRecovery=0.2,
@@ -170,7 +196,7 @@ def main(*args):
         ani = animateIndividual(sim,args.duration)
         ani.show(args.file)
     
-    elif args.sim==6:
+    elif args.sim==7:
         """Many cities, to show the effects of 
            population density/social distancing"""
         sp = subPopulationSim(50,50,pTravel=0.01,city='No Distancing')
@@ -194,7 +220,7 @@ def main(*args):
         ani = animateIndividual(sim,args.duration)
         ani.show(args.file)
         
-    elif args.sim==7:
+    elif args.sim==8:
         """Many cities, to show the effects of 
            different death probabilities"""
         sp = subPopulationSim(75,75,pTravel=0.0,pDeath=0.002,city='Minimal Death')
@@ -208,7 +234,103 @@ def main(*args):
         sim = populationSim([sp,sp2,sp3])
         
         ani = animateIndividual(sim,args.duration)
+<<<<<<< HEAD
         ani.show(args.file)
+=======
+        ani.show()
+        
+    elif args.sim==9:
+        """No vaccination vs vaccinating after a period of time"""
+        sp = subPopulationSim(75,75, pVaccination=0.1, startVaccination=8, 
+                              city='Vaccinate after 8 days')
+        # sp2 = subPopulationSim(75,75, pVaccination=0.033, city='Medium Vaccination')
+        sp3 = subPopulationSim(75,75, pVaccination=0, city='No Vaccination')
+        
+        sp.randomInfection(0.002)
+        # sp2.randomInfection(0.002)
+        sp3.randomInfection(0.002)
+        
+        sim = populationSim([sp,sp3], pInfection=0.33)
+        
+        ani = animateIndividual(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==101:
+        """Experimental case 1: medium recovery rate, with gradual loss of immunity,
+           and  no travelling.
+           May represent the common cold, which mutates making people susceptible again
+           Results in an endless oscilating SIR pattern and fluid like grid interation
+           Best when duration > 300"""
+           
+        sp = subPopulationSim(125,125,pRecovery=0.6,pReinfection=0.05,pTravel=0)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp])
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==102:
+        """Experimental case 2: high recovery rate, with slower loss of immunity,
+           but also high infection rate, causing more rapid spread, 
+           and with small amount of travel
+           Results in an endless oscilating SIR patter, with regular sudden outbreaks
+           Best when duration > 300"""
+           
+        sp = subPopulationSim(125,125,pRecovery=0.7, pReinfection=0.03,pTravel=0.01)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp],pInfection=0.8)
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==103:
+        """Experimental case 2: Slow but guaranteed death. This may represent covid in
+           less fortunate areas, or more likely a deadlier type of virus.
+           Note the death probability is not high, but recovery is 0, so it
+           simply takes a while to die"""
+           
+        sp = subPopulationSim(100,100,pDeath=0.1,pRecovery=0,pTravel=0)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp])
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==104:
+        """Experimental case 2: Slow but guaranteed death. This may represent covid in
+           less fortunate areas, or more likely a deadlier type of virus.
+           Note the death probability is not high, but recovery is 0, so it
+           simply takes a while to die"""
+           
+        sp = subPopulationSim(100,100,pDeath=0.1,pRecovery=0,pTravel=0,
+                              pInfection=0.0)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp])
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+    elif args.sim==105:
+        """Experimental case 2: Rapid Spread and high death"""
+           
+        sp = subPopulationSim(200,200,pDeath=0.9,pTravel=0.2)
+        
+        sp.randomInfection(0.001)
+        
+        sim = populationSim([sp],pInfection=0.99)
+        
+        ani = Animation(sim,args.duration)
+        ani.show()
+        
+>>>>>>> b6157142de73e8a7ae4b7055d0596a779cdb7659
     
     else:
         # custom simulation input, via bash
