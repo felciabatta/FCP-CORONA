@@ -4,7 +4,7 @@ from matplotlib.animation import FuncAnimation
 
 
 class Animation:
-    """Animates simultion as a grid and line graph
+    """Animates simultion as a series of grids and single (combined) line graph
        Note: 'simulation' MUST be a populationSim class
     """
     
@@ -16,12 +16,12 @@ class Animation:
         self.figure = plt.figure(figsize=(3+3*len(simulation.subPopulations), 5))
         
         # lineaimation axes
-        self.lineAx = self.figure.add_subplot(1, len(simulation.subPopulations)+1, 1)
+        self.lineAx = self.figure.add_subplot(1, len(simulation.subPopulations)+2, (1,2))
         
         # creates as many sets of grid axes as no. of cities
         self.gridAxs = []
         for i in range(len(simulation.subPopulations)):
-            self.gridAxs.append(self.figure.add_subplot(1,len(simulation.subPopulations)+1,i+2))
+            self.gridAxs.append(self.figure.add_subplot(1,len(simulation.subPopulations)+2,i+3))
         
         # lineanimation of total SIRD across population
         self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 
@@ -33,14 +33,18 @@ class Animation:
             self.GridAnimations.append(GridAnimation(self.gridAxs[i],simulation.subPopulations[i],
                                                      simulation.subPopulations[i].get_Colours()))
     
-    def show(self):
+    
+    def show(self, filename = None):
         animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
                                    frames=range(self.duration), blit=True, interval=200)
         plt.show()
         
+        if filename:
+            animation.save(filename)
+        
     def init(self):
         actors=[]
-        # actors+=self.GridAnimation.init()
+        
         actors+=self.LineAnimation.init()
         
         for ani in self.GridAnimations:
@@ -48,17 +52,95 @@ class Animation:
         
         return actors
     
+    
     def update(self, framenum):
         self.simulation.update()
         
         actors=[]
-        # actors+=self.GridAnimation.update(framenum)
+        
         actors+=self.LineAnimation.update(self.simulation.collectData())
         
         for ani in self.GridAnimations:
             actors+=ani.update(framenum)
             
         return actors
+    
+
+    
+class animateIndividual:
+    """Animates simultion as a grid and line graph
+       One grid and line graph per subpopulation
+       Note: 'simulation' MUST be a populationSim class
+    """
+    
+    def __init__(self, simulation, duration):
+        self.simulation = simulation
+        self.duration = duration
+        
+        # figure sie depends on no. of sets of axes
+        self.figure = plt.figure(figsize=(3*len(simulation.subPopulations), 6))
+        
+        # creates as many sets of line axes as no. of cities
+        
+        self.lineAxs = []
+        for i in range(len(simulation.subPopulations)):
+            self.lineAxs.append(self.figure.add_subplot(2,len(simulation.subPopulations),
+                                                        len(simulation.subPopulations)+i+1))
+        
+        
+        # creates as many sets of grid axes as no. of cities
+        self.gridAxs = []
+        for i in range(len(simulation.subPopulations)):
+            self.gridAxs.append(self.figure.add_subplot(2,len(simulation.subPopulations),i+1))
+        
+        # lineanimation of SIRD for each city
+        self.LineAnimations = []
+        for i in range(len(simulation.subPopulations)):
+            self.LineAnimations.append(LineAnimation(simulation.subPopulations[i].collectData(), 
+                                                     self.lineAxs[i], duration, 
+                                                     self.simulation.subPopulations[i].populationSize))
+        
+        # gridanimation of each city
+        self.GridAnimations = []
+        for i in range(len(simulation.subPopulations)):
+            self.GridAnimations.append(GridAnimation(self.gridAxs[i],simulation.subPopulations[i],
+                                                     simulation.subPopulations[i].get_Colours()))     
+    
+    
+    def show(self, filename = None):
+        animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
+                                  frames=range(self.duration), blit=True, interval=200)
+        plt.show()
+        
+        if filename:
+            animation.save(filename)
+        
+        
+    def init(self):
+        actors=[]
+        
+        for ani in self.LineAnimations:
+            actors+=ani.init()
+        
+        for ani in self.GridAnimations:
+            actors+=ani.init()
+        
+        return actors
+    
+    
+    def update(self, framenum):
+        self.simulation.update()
+        
+        actors=[]
+        
+        for i in range(len(self.LineAnimations)):
+            actors+=self.LineAnimations[i].update(self.simulation.subPopulations[i].collectData())
+        
+        for ani in self.GridAnimations:
+            actors+=ani.update(framenum)
+            
+        return actors
+
 
 
 class GridAnimation():
@@ -75,8 +157,10 @@ class GridAnimation():
         self.axes.set_xticks([])
         self.axes.set_yticks([])
         
+        
     def init(self):
         return self.update(0)
+    
     
     def update(self, framenum):
         day = framenum
@@ -86,11 +170,8 @@ class GridAnimation():
         
     
 
-
 class LineAnimation: 
     """Creates a line animation of Suceptible, Infected, Recovered and Dead states"""
-
-    # Importing data from simulation.py
     
     def __init__(self, data, axes, duration, populationSize):
         self.axes = axes
@@ -103,9 +184,12 @@ class LineAnimation:
         
         self.yLim=populationSize
         
-        self.axes.legend(fontsize=8)
+        self.axes.legend(fontsize=6, ncol=2, handlelength=0.5, framealpha=0.8, 
+                         fancybox=True, frameon=True, borderpad=0.6, columnspacing=1.0)
         self.axes.set_xlabel('Day')
         self.axes.set_ylabel('People')
+        self.axes.tick_params(axis='y', rotation=90, labelsize=7)
+        self.axes.tick_params(axis='x', labelsize=8)
         
         # prepare x data
         self.days = [0]
@@ -133,7 +217,6 @@ class LineAnimation:
         return Line
         
        
-    
     def update(self, data):
         # Adding the amount of people in the SIRD states
         self.days.append(len(self.days))
@@ -149,14 +232,7 @@ class LineAnimation:
         Line.append(self.lineS,)
         Line.append(self.lineR,)
         Line.append(self.lineD,)
-        Line.append(self.lineI)
+        Line.append(self.lineI,)
         return Line
 
 
-    
-    
-
-
-
-        
-        

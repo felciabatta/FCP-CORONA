@@ -32,7 +32,7 @@ class person:
     def updateProbabilities(self):
         
         if self.status == "S":
-            self.pInfection = self.neighbours.count("I") * 0.01
+            self.pInfection = self.neighbours.count("I") * 0.1
             
             if self.previouslyInfected:
                 self.pVaccinate = 0.1
@@ -80,6 +80,7 @@ class person:
             self.daysInfected += 1
             
             if r.random() < self.pRecovery:
+                self.previouslyInfected = True
                 self.status = "S"
             
             elif  r.random() < self.pDeath:
@@ -114,8 +115,8 @@ class subPopulationSim:
     def __init__(self, width=5, height=5, city='City'):
 
         self.city = city
-        self.width = width
-        self.height = height
+        # self.width = width
+        # self.height = height
 
         self.day = 0
         
@@ -230,11 +231,15 @@ class subPopulationSim:
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
                 if self.gridState[i][j].status == 'I':
-                    infected += 'I'
+                    if self.gridState[i][j].previouslyInfected:
+                        recovered += 'R'
+                    else:
+                        infected += 'I'
                 elif self.gridState[i][j].status == 'S':
-                    susceptable += 'S'
-                elif self.gridState[i][j].status == 'R':
-                    recovered += 'R'
+                    if self.gridState[i][j].previouslyInfected:
+                        recovered += 'R'
+                    else:
+                        susceptable += 'S'
                 elif self.gridState[i][j].status == 'D':
                     dead += 'D'
                 elif self.gridState[i][j].status == 'T':
@@ -291,18 +296,28 @@ class subPopulationSim:
         for i in range(len(self.gridState)):
           for j in range(len(self.gridState[i])):
              if  self.gridState[i][j].status == 'S':
-                colour_grid[i][j][0]=0
-                colour_grid[i][j][1]=255
-                colour_grid[i][j][2]=0
-             elif self.gridState[i, j].status == 'I':
-               colour_grid[i][j][0]=255
-               colour_grid[i][j][1]=0
-               colour_grid[i][j][2]=0
-             elif self.gridState[i, j].status == 'V':
+                 if self.gridState[i][j].previouslyInfected:
+                     colour_grid[i][j][0]=50
+                     colour_grid[i][j][1]=50
+                     colour_grid[i][j][2]=250
+                 else:
+                    colour_grid[i][j][0]=0
+                    colour_grid[i][j][1]=255
+                    colour_grid[i][j][2]=0
+             elif self.gridState[i][j].status == 'I':
+                 # if self.gridState[i][j].previouslyInfected:
+                 #    colour_grid[i][j][0]=50
+                 #    colour_grid[i][j][1]=50
+                 #    colour_grid[i][j][2]=250
+                 # else:
+                    colour_grid[i][j][0]=255
+                    colour_grid[i][j][1]=0
+                    colour_grid[i][j][2]=0
+             elif self.gridState[i][j].status == 'V':
                colour_grid[i][j][0]=0
                colour_grid[i][j][1]=0
                colour_grid[i][j][2]=255
-             elif self.gridState[i, j].status == 'D':     
+             elif self.gridState[i][j].status == 'D':     
                 colour_grid[i][j][0]=0
                 colour_grid[i][j][1]=0
                 colour_grid[i][j][2]=0
@@ -310,11 +325,11 @@ class subPopulationSim:
                 colour_grid[i][j][0]=200
                 colour_grid[i][j][1]=50
                 colour_grid[i][j][2]=100
-             elif self.gridState[i, j].status == 'R': 
+             elif self.gridState[i][j].status == 'R': 
                 colour_grid[i][j][0]=50
                 colour_grid[i][j][1]=50
                 colour_grid[i][j][2]=250
-             elif self.gridState[i, j].status == 'T': 
+             elif self.gridState[i][j].status == 'T': 
                 colour_grid[i][j][0]=30
                 colour_grid[i][j][1]=100
                 colour_grid[i][j][2]=150
@@ -375,7 +390,7 @@ class populationSim:
         
         for sp in self.subPopulations:
             sp.pInfectedByTraveller=self.pInfectedByTraveller
-            sp.update()
+            sp.nextDay()
     
 
     def collectData(self):
@@ -415,10 +430,10 @@ class populationSim:
 
 
 
-x = subPopulationSim()
-x.randomInfection()
-for i in range(20):
-    x.nextDay()
-    print(x)
-print(x.gridState[1][2].pQuarantine, x.gridState[1][2].daysInfected, x.gridState[1][2].quarantining)
+# x = subPopulationSim()
+# x.randomInfection()
+# for i in range(20):
+#     x.nextDay()
+#     print(x)
+# print(x.gridState[1][2].pQuarantine, x.gridState[1][2].daysInfected, x.gridState[1][2].quarantining)
 

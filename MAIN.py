@@ -21,7 +21,7 @@ def main(*args):
     parser.add_argument('--cities', metavar='N', type=int, default=2,
                         help='Create N cities')
     
-    parser.add_argument('--duration', metavar='T', type=int, default=100,
+    parser.add_argument('--duration', metavar='T', type=int, default=200,
                         help='Simulate for T days')
     
     parser.add_argument('--distancing', metavar='P', type=float, default=0.05,
@@ -30,20 +30,20 @@ def main(*args):
     parser.add_argument('--recovery', metavar='P', type=float, default=0.1,
                         help='Probability of recovery (per day)')
     
-    parser.add_argument('--infection', metavar='P', type=float, default=0.3,
+    parser.add_argument('--infection', metavar='P', type=float, default=0.33,
                         help='Probability of infecting a neighbour (per day)')
     
-    parser.add_argument('--reinfection', metavar='P', type=float, default=0.001,
+    parser.add_argument('--reinfection', metavar='P', type=float, default=0.005,
                         help='Probability of losing immunity (per day)')
                         # double check how long immunity lasts for default
     
     parser.add_argument('--death', metavar='P', type=float, default=0.002087,
                         help='Probability of dying when infected (per day)')
-                        # default should probably be much lower that 2%, as it is per day,
-                        # maybe 0.2% as roughly 10 days period of infection
+                        # default is 0.2%, as it is 'per day',
+                        # as roughly 10 days of infection, results in ~2% overall
     
-    parser.add_argument('--cases', metavar='P', type=float, default=0.001,
-                        help='Probabilty of initial infection')
+    parser.add_argument('--cases', metavar='N', type=int, default=5,
+                        help='Average number of intial cases')
     
     parser.add_argument('--vaccinate', metavar='P', type=float, default=0.0001,
                         help='Probability of vaccination (per day)')
@@ -51,11 +51,14 @@ def main(*args):
     parser.add_argument('--quarantine', metavar='P', type=float, default=0.15,
                         help='Probability of quarantine when infected (per day)')
     
-    parser.add_argument('--travel', metavar='P', type=float, default=0.03,
+    parser.add_argument('--travel', metavar='P', type=float, default=0.1,
                         help='Probability of travelling while infected (per day)')
     
-    parser.add_argument('--plot', action='store_true',
-                        help='Generate plots instead of an animation')
+    parser.add_argument('--mode', metavar='m', type=str, default='animate',
+                        help='Choose "animate", or "data" mode')
+    
+    parser.add_argument('--data', metavar='d', type=str, default='total',
+                        help='Choose "total", or "individual" data')
     
     parser.add_argument('--file', metavar='N', type=str, default=None,
                         help='Filename to save to instead of showing on screen')
@@ -85,96 +88,128 @@ def main(*args):
         sp = subPopulationSim(20,20)
         # sp.emptyLocation(0.3)
         sp.randomInfection(0.01)
+
+        """Stanard simulation"""
+        sp = subPopulationSim(100,100)
+        
+        sp.randomInfection(0.001)
         
         sim = populationSim([sp])
         
-        ani = Animation(sim,200)
-        ani.show()
+        ani = Animation(sim,args.duration)
+        ani.show(args.file)
         
-    elif args.sim==6:
-        sp = subPopulationSim(50,50,pTravel=0.03)
-        sp2 = subPopulationSim(50,50,pTravel=0.03)
+    elif args.sim==2:
+        """Many cities, to show effects of travelling"""
+        sp = subPopulationSim(50,50,pTravel=0.01,city='')
+        sp2 = subPopulationSim(20,20,pTravel=0.01,city='')
+        sp3 = subPopulationSim(30,30,pTravel=0.01,city='')
+        sp4 = subPopulationSim(50,50,pTravel=0.01,city='')
+        sp5 = subPopulationSim(50,50,pTravel=0.01,city='')
+        sp6 = subPopulationSim(75,75,pTravel=0.01,city='')
         
-        sp.emptyLocation(0.3)
-        sp2.emptyLocation(0.2)
-        
-        sp.randomInfection(0.001)
-        
-        sim = populationSim([sp,sp2])
-        
-        ani = Animation(sim,100)
-        ani.show()
-        
-    elif args.sim==7:
-        sp = subPopulationSim(50,50,pTravel=0.023)
-        sp2 = subPopulationSim(50,30,pTravel=0.021)
-        sp3 = subPopulationSim(50,60,pTravel=0.021)
-        sp4 = subPopulationSim(20,30,pTravel=0.021)
-        sp5 = subPopulationSim(20,20,pTravel=0.021)
-        sp6 = subPopulationSim(20,20,pTravel=0.021)
-        
-        sp.emptyLocation(0.3)
-        sp.randomInfection(0.001)
+        sp.randomInfection(0.002)
         
         sim = populationSim([sp,sp2,sp3,sp4,sp5,sp6])
         
-        ani = Animation(sim,100)
-        ani.show()
+        ani = Animation(sim,args.duration)
+        ani.show(args.file)
         
-    elif args.sim==8:
+    elif args.sim==3:
         """High rate of quarantine vs low quarantine"""
-        sp = subPopulationSim(100,100,pTravel=0.0,pQuarantine=1,pEndQuarantine=0)
-        sp2 = subPopulationSim(100,100,pTravel=0.0,pQuarantine=0)
+        sp = subPopulationSim(75,75,pTravel=0.0,city='High\nQuarantine',pQuarantine=1,pEndQuarantine=0)
+        sp2 = subPopulationSim(75,75,pTravel=0.0,city='Medium\nQuarantine',pQuarantine=0.3,pEndQuarantine=0.1)
+        sp3 = subPopulationSim(75,75,pTravel=0.0,city='No\nQuarantine',pQuarantine=0)
         
-        sp.emptyLocation(0.1)
-        sp2.emptyLocation(0.05)
+        sp.randomInfection(0.002)
+        sp2.randomInfection(0.002)
+        sp3.randomInfection(0.002)
         
-        sp.randomInfection(0.005)
-        sp2.randomInfection(0.005)
+        sim = populationSim([sp,sp2,sp3], pInfection=0.33)
         
-        sim = populationSim([sp,sp2], pInfection=0.25)
+        ani = animateIndividual(sim,args.duration)
+        ani.show(args.file)
         
-        ani = Animation(sim,100)
-        ani.show()
-        
-    elif args.sim==9:
+    elif args.sim==4:
         """Lots of vaccination vs no vaccination"""
-        sp = subPopulationSim(100,100, pVaccination=0.01)
-        sp2 = subPopulationSim(100,100, pVaccination=0.001)
+        sp = subPopulationSim(75,75, pVaccination=0.1, city='High Vaccination')
+        sp2 = subPopulationSim(75,75, pVaccination=0.033, city='Medium Vaccination')
+        sp3 = subPopulationSim(75,75, pVaccination=0, city='No Vaccination')
         
-        sp.randomVaccination(0.2)
-        sp2.randomVaccination(0.01)
+        sp.randomInfection(0.002)
+        sp2.randomInfection(0.002)
+        sp3.randomInfection(0.002)
         
-        sp.emptyLocation(0.05)
-        sp2.emptyLocation(0.05)
+        sim = populationSim([sp,sp2,sp3], pInfection=0.33)
         
-        sp.randomInfection(0.005)
-        sp2.randomInfection(0.005)
-        
-        sim = populationSim([sp,sp2], pInfection=0.25)
-        
-        ani = Animation(sim,100)
+        ani = animateIndividual(sim,args.duration)
         ani.show()
         
-    elif args.sim==10:
+    elif args.sim==5:
         """Lots of combined measures vs no measures"""
-        sp = subPopulationSim(100,100, pVaccination=0.01, pQuarantine=0.95, 
-                              pEndQuarantine=0, pTravel=0,pRecovery=0.2)
-        sp2 = subPopulationSim(100,100, pVaccination=0.001,pQuarantine=0, pTravel=0.5,
-                               pRecovery=0.075)
+        sp = subPopulationSim(75,75, pVaccination=0.033, pQuarantine=0.95, 
+                              pEndQuarantine=0.05, pTravel=0,pRecovery=0.2,
+                              city='Strict Measures')
         
-        sp.randomVaccination(0.05)
+        sp2 = subPopulationSim(75,75, pVaccination=0.01,pQuarantine=0.3, pTravel=0.1,
+                               pRecovery=0.1, city='Some Measures')
         
-        sp.emptyLocation(0.05)
+        sp3 = subPopulationSim(75,75, pVaccination=0,pQuarantine=0, pTravel=0.3,
+                               pRecovery=0.075, city='No Measures')
         
-        sp.randomInfection(0.005)
-        sp2.randomInfection(0.005)
+        sp.emptyLocation(0.3)
+        sp2.emptyLocation(0.1)
         
-        sim = populationSim([sp,sp2], pInfection=0.25)
         
-        ani = Animation(sim,100)
-        ani.show()
+        sp.randomInfection(0.002)
+        sp2.randomInfection(0.002)
+        sp3.randomInfection(0.002)
         
+        sim = populationSim([sp,sp2,sp3], pInfection=0.33)
+        
+        ani = animateIndividual(sim,args.duration)
+        ani.show(args.file)
+    
+    elif args.sim==6:
+        """Many cities, to show the effects of 
+           population density/social distancing"""
+        sp = subPopulationSim(50,50,pTravel=0.01,city='No Distancing')
+        sp2 = subPopulationSim(50,50,pTravel=0.01,city='Low Distancing')
+        sp3 = subPopulationSim(50,50,pTravel=0.01,city='')
+        sp4 = subPopulationSim(50,50,pTravel=0.01,city='Medium Distacing')
+        sp5 = subPopulationSim(50,50,pTravel=0.01,city='')
+        sp6 = subPopulationSim(50,50,pTravel=0.01,city='High Distancing')
+        
+        sp.emptyLocation(0)
+        sp2.emptyLocation(0.15)
+        sp3.emptyLocation(0.3)
+        sp4.emptyLocation(0.45)
+        sp5.emptyLocation(0.6)
+        sp6.emptyLocation(0.75)
+        
+        sp.randomInfection(0.002)
+        
+        sim = populationSim([sp,sp2,sp3,sp4,sp5,sp6])
+        
+        ani = animateIndividual(sim,args.duration)
+        ani.show(args.file)
+        
+    elif args.sim==7:
+        """Many cities, to show the effects of 
+           different death probabilities"""
+        sp = subPopulationSim(75,75,pTravel=0.0,pDeath=0.002,city='Minimal Death')
+        sp2 = subPopulationSim(75,75,pTravel=0.0,pDeath=0.1,city='Medium Death')
+        sp3 = subPopulationSim(75,75,pTravel=0.0,pDeath=0.9,city='High Death')
+        
+        sp.randomInfection(0.002)
+        sp2.randomInfection(0.002)
+        sp3.randomInfection(0.002)
+        
+        sim = populationSim([sp,sp2,sp3])
+        
+        ani = animateIndividual(sim,args.duration)
+        ani.show(args.file)
+    
     else:
         # custom simulation input, via bash
         cities = []
@@ -186,19 +221,33 @@ def main(*args):
                               pEndQuarantine=0.05, pVaccination = args.vaccinate
                               )
                           )
-            
+        
+        
         for sp in cities:
             sp.emptyLocation(args.distancing)
-        cities[0].randomInfection(args.cases)
-        
+        cities[0].randomInfection( args.cases/(args.cities*args.size**2) )
         
         sim = populationSim(cities, args.infection)
         
-        ani = Animation(sim, args.duration)
-        ani.show()
-    
         
-
+        if args.mode=='animate':
+            if args.data=='total':
+                ani = Animation(sim, args.duration)
+            elif args.data=='individual':
+                ani = animateIndividual(sim, args.duration)
+            ani.show(args.file)
+        
+        elif args.mode=='data':
+            if args.data=='total':
+                for day in range(args.duration):
+                    sim.update()
+                print(sim.collectData())
+            elif args.data=='individual':
+                for day in range(args.duration):
+                    sim.update()
+                for sp in sim.subPopulations:
+                    print(f'\n{sp.city}\n',sp.collectData())
+        
 
 
 if __name__ == "__main__":
