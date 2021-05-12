@@ -107,7 +107,7 @@ class animateIndividual:
                                                      simulation.subPopulations[i].get_Colours()))     
     
     
-    def show(self, filename = None):
+    def show(self, save=False, filename = 'CoronaSim.mp4'):
         animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
                                   frames=range(self.duration), blit=True, interval=200)
         plt.show()
