@@ -354,21 +354,6 @@ def main(*args):
             
             ani = Animation(sim,args.duration)
             
-        # elif args.sim==104:
-        #     """Experimental case 2: Slow but guaranteed death. This may represent covid in
-        #        less fortunate areas, or more likely a deadlier type of virus.
-        #        Note the death probability is not high, but recovery is 0, so it
-        #        simply takes a while to die"""
-               
-        #     sp = subPopulationSim(100,100,pDeath=0.1,pRecovery=0,pTravel=0,
-        #                           pInfection=0.0,city='')
-            
-        #     sp.randomInfection(0.001)
-            
-        #     sim = populationSim([sp])
-            
-        #     ani = Animation(sim,args.duration)
-            
         elif args.sim==105:
             """Experimental case 5: Rapid Spread and high death
                Recommended 25 days"""
@@ -383,8 +368,8 @@ def main(*args):
             
         elif args.sim==106:
             """Experimental case 3: extreme recovery rate, instant loss of immunity,
-               and no travelling.
-               Reccomend 300 days"""
+               extreme infection rate, and no travelling.
+               Reccomend 200 days"""
                
             sp = subPopulationSim(125,125,pRecovery=0.99,pReinfection=0.99,
                                   pTravel=0, city='')
