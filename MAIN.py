@@ -74,7 +74,6 @@ def main(*args):
     # NOTE: Need some decent names for these, 
     #       could put into another file and convert to bash instead of functions?
     if args.sim==1:
-<<<<<<< HEAD
         simTestDays(10)
         
     elif args.sim==2:
@@ -93,11 +92,11 @@ def main(*args):
 
         """Stanard simulation"""
         sp = subPopulationSim(100,100)
-=======
+
         """Standard simulation, with no measures in place,
            demonstrates phenomenon of waves"""
         sp = subPopulationSim(75,75,pVaccination=0)
->>>>>>> b6157142de73e8a7ae4b7055d0596a779cdb7659
+
         
         sp.randomInfection(0.002)
         
