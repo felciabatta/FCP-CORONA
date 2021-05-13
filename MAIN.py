@@ -50,7 +50,7 @@ def main(*args):
                         help='Probability of vaccination (per day)')
     
     parser.add_argument('--quarantine', metavar='P', type=float, default=0.15,
-                        help='Probability of quarantine when infected (per day)')
+                        help='Probability of quarantine while infected (per day)')
     
     parser.add_argument('--travel', metavar='P', type=float, default=0.1,
                         help='Probability of travelling while infected (per day)')
@@ -64,7 +64,10 @@ def main(*args):
     parser.add_argument('--file', metavar='N', type=str, default=None,
                         help='Filename to save to instead of showing on screen')
     
-    parser.add_argument('--sim', metavar='N', type=int, default=0,
+    parser.add_argument('--speed', metavar='T', type=int, default=200,
+                        help='Playback speed (frame length), milliseconds')
+    
+    parser.add_argument('--sim', metavar='N', type=int, default=None,
                         help='Run predetermined simulation')
     
     args = parser.parse_args(args)
@@ -194,27 +197,9 @@ def main(*args):
         
         ani = animateIndividual(sim,args.duration)
         ani.show(args.file)
-    
-    elif args.sim==7:
-        """Many cities, to show the effects of 
-           population density/social distancing"""
-        sp = subPopulationSim(50,50,pTravel=0.01,city='No Distancing')
-        sp2 = subPopulationSim(50,50,pTravel=0.01,city='Low Distancing')
-        sp3 = subPopulationSim(50,50,pTravel=0.01,city='')
-        sp4 = subPopulationSim(50,50,pTravel=0.01,city='Medium Distacing')
-        sp5 = subPopulationSim(50,50,pTravel=0.01,city='')
-        sp6 = subPopulationSim(50,50,pTravel=0.01,city='High Distancing')
-        
-        sp.emptyLocation(0)
-        sp2.emptyLocation(0.15)
-        sp3.emptyLocation(0.3)
-        sp4.emptyLocation(0.45)
-        sp5.emptyLocation(0.6)
-        sp6.emptyLocation(0.75)
-        
-        sp.randomInfection(0.002)
-        
-        sim = populationSim([sp,sp2,sp3,sp4,sp5,sp6])
+
+    if args.sim == None:
+        """Uses custom simulation input, via bash"""
         
         ani = animateIndividual(sim,args.duration)
         ani.show(args.file)
@@ -333,30 +318,38 @@ def main(*args):
     
     else:
         # custom simulation input, via bash
+        # initialise subPopulations
         cities = []
         for i in range(args.cities):
+            
             cities.append(subPopulationSim(width=args.size, height=args.size, pDeath=args.death,
                               pInfection=args.infection, pRecovery=args.recovery, 
                               pReinfection=args.reinfection, pTravel=args.travel,
-                              pQuarantine=args.quarantine, city=f"City {i+1}",
+                              pQuarantine=args.quarantine, city="",
                               pEndQuarantine=0.05, pVaccination = args.vaccinate
                               )
                           )
         
         
+        # initial infection
         for sp in cities:
             sp.emptyLocation(args.distancing)
         cities[0].randomInfection( args.cases/(args.cities*args.size**2) )
         
+        # initialise population
         sim = populationSim(cities, args.infection)
         
-        
+        # output options
         if args.mode=='animate':
             if args.data=='total':
                 ani = Animation(sim, args.duration)
             elif args.data=='individual':
                 ani = animateIndividual(sim, args.duration)
-            ani.show(args.file)
+            
+            if args.file == None:
+                ani.show()
+            else:
+                ani.save(args.file, args.speed)
         
         elif args.mode=='data':
             if args.data=='total':
@@ -368,6 +361,10 @@ def main(*args):
                     sim.update()
                 for sp in sim.subPopulations:
                     print(f'\n{sp.city}\n',sp.collectData())
+    
+   
+        
+        
         
 
 

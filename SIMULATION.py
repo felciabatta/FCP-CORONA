@@ -3,7 +3,6 @@ import numpy.random as r
 import time as t
 import pandas as pd
 from math import inf
-from ANIMATION import *
    
 class subPopulationSim:
     """
@@ -335,7 +334,7 @@ class populationSim:
     
     def __init__(self, subPopulations=[subPopulationSim(city="City1"),
                                        subPopulationSim(city="City2")], 
-                 pInfection = 0.5):
+                 pInfection = 0.33):
         
         # initialise list of subpopulations, all have same pInfection,
         # all other parameters may be different
@@ -526,19 +525,6 @@ def SimTestVaccine(days):
         print(f"DAY {day + 1}:")
         print(f"{subPop.gridState} \n")  
         print(subPop.collectData())
-        
-
-def TestAnimation(days,w):
- sim = subPopulationSim(w, w, 0.001, 0.5, 0.1, 0.005, 0.01, 0.0, 'Bristol', 0)
- sim.randomInfection(0.05)
- sim.randomVaccination()
-       
- for day in range(days):
-     t.sleep(1)
-     sim.update()
-     ani=Animation(sim,10)
-     ani.update(1)
-     ani.show()
 
 
 # RESEARCH ----------------------------------------------------------------------

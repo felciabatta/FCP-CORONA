@@ -12,16 +12,27 @@ class Animation:
         self.simulation = simulation
         self.duration = duration
         
+        # determines grid dimensions
+        if len(simulation.subPopulations)<=3:
+            cols = len(simulation.subPopulations)+1
+            rows = 1
+        else:
+            cols = 4
+            rows = int(np.ceil( (len(simulation.subPopulations)+1)/4 ))
+        
         # figure sie depends on no. of sets of axes
-        self.figure = plt.figure(figsize=(4+4*len(simulation.subPopulations), 4))
+        self.figure = plt.figure(figsize=(4*cols, 4*rows))
         
         # lineaimation axes
-        self.lineAx = self.figure.add_subplot(1, len(simulation.subPopulations)+1, (1,1))
+        self.lineAx = self.figure.add_subplot(rows, cols, (1,1))
         
         # creates as many sets of grid axes as no. of cities
         self.gridAxs = []
         for i in range(len(simulation.subPopulations)):
-            self.gridAxs.append(self.figure.add_subplot(1,len(simulation.subPopulations)+1,i+2))
+            self.gridAxs.append(self.figure.add_subplot(rows, cols ,i+2))
+        
+        # reduce empty space
+        self.figure.tight_layout()
         
         # lineanimation of total SIRD across population
         self.LineAnimation = LineAnimation(simulation.collectData(), self.lineAx, 
@@ -34,13 +45,19 @@ class Animation:
                                                      simulation.subPopulations[i].get_Colours()))
     
     
-    def show(self, filename = None):
+    def show(self):
         animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
-                                   frames=range(self.duration), blit=True, interval=200)
+                                  frames=range(self.duration), blit=True, interval=200)
+        
         plt.show()
         
-        if filename:
-            animation.save(filename)
+    
+    def save(self, filename = "CoronaSim.mp4", speed=200):
+        animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
+                                  frames=range(self.duration), blit=True, interval=speed)
+        
+        animation.save(filename, dpi=300)
+        
         
     def init(self):
         actors=[]
@@ -81,17 +98,18 @@ class animateIndividual:
         self.figure = plt.figure(figsize=(3*len(simulation.subPopulations), 6))
         
         # creates as many sets of line axes as no. of cities
-        
         self.lineAxs = []
         for i in range(len(simulation.subPopulations)):
             self.lineAxs.append(self.figure.add_subplot(2,len(simulation.subPopulations),
                                                         len(simulation.subPopulations)+i+1))
         
-        
         # creates as many sets of grid axes as no. of cities
         self.gridAxs = []
         for i in range(len(simulation.subPopulations)):
             self.gridAxs.append(self.figure.add_subplot(2,len(simulation.subPopulations),i+1))
+        
+        # reduce empty space: MAYBE NOT BEST FOR THIS LAYOUT, IT CUTS STUFF OFF
+        # self.figure.tight_layout()
         
         # lineanimation of SIRD for each city
         self.LineAnimations = []
@@ -107,13 +125,18 @@ class animateIndividual:
                                                      simulation.subPopulations[i].get_Colours()))     
     
     
-    def show(self, save=False, filename = 'CoronaSim.mp4'):
+    def show(self):
         animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
                                   frames=range(self.duration), blit=True, interval=200)
+        
         plt.show()
         
-        if filename:
-            animation.save(filename)
+        
+    def save(self, filename = "CoronaSim.mp4", speed=200):
+        animation = FuncAnimation(self.figure, self.update, init_func=self.init, 
+                                  frames=range(self.duration), blit=True, interval=speed)
+        
+        animation.save(filename, dpi=300)
         
         
     def init(self):
