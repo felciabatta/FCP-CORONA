@@ -126,21 +126,8 @@ def main(*args):
     
     else:
         """Run one of the predetermined simulations"""
-        
+            
         if args.sim==1:
-            """Standard simulation, with no measures in place,
-               demonstrates phenomenon of waves
-               Recommended 300 days"""
-               
-            sp = subPopulationSim(75,75,pVaccination=0)
-            
-            sp.randomInfection(0.002)
-            
-            sim = populationSim([sp])
-            
-            ani = Animation(sim,args.duration)
-            
-        elif args.sim==2:
             """Many cities, with small amounts of travelling between cities, 
                leading to multiple waves
                Recommended 600 days"""
@@ -158,7 +145,7 @@ def main(*args):
             
             ani = Animation(sim,args.duration)
             
-        elif args.sim==3:
+        elif args.sim==2:
             """Many cities, with large amounts of travelling between cities, 
                leading to multiple waves, but tending towards an equillibrium,
                with near-constant number of cases
@@ -177,6 +164,30 @@ def main(*args):
             
             ani = Animation(sim,args.duration)
             
+        elif args.sim==3:
+            """Many cities, to show the effects of 
+               population density/social distancing
+               Recommended 200 days"""
+            # sp = subPopulationSim(50,50,pTravel=0.01,city='No Distancing')
+            sp2 = subPopulationSim(50,50,pTravel=0.01,city='Low Distancing')
+            sp3 = subPopulationSim(50,50,pTravel=0.01,city='')
+            sp4 = subPopulationSim(50,50,pTravel=0.01,city='Medium Distacing')
+            sp5 = subPopulationSim(50,50,pTravel=0.01,city='')
+            sp6 = subPopulationSim(50,50,pTravel=0.01,city='High Distancing')
+            
+            # sp.emptyLocation(0)
+            sp2.emptyLocation(0.15)
+            sp3.emptyLocation(0.3)
+            sp4.emptyLocation(0.45)
+            sp5.emptyLocation(0.6)
+            sp6.emptyLocation(0.75)
+            
+            sp2.randomInfection(0.002)
+            
+            sim = populationSim([sp2,sp3,sp4,sp5,sp6])
+            
+            ani = animateIndividual(sim,args.duration)    
+        
         elif args.sim==4:
             """High rate of quarantine vs low quarantine
                Recommended 600 days"""
@@ -237,34 +248,9 @@ def main(*args):
             sim = populationSim([sp,sp2,sp3], pInfection=0.33)
             
             ani = animateIndividual(sim,args.duration)
-        
+            
         elif args.sim==7:
-            """Many cities, to show the effects of 
-               population density/social distancing
-               Recommended 200 days"""
-            # sp = subPopulationSim(50,50,pTravel=0.01,city='No Distancing')
-            sp2 = subPopulationSim(50,50,pTravel=0.01,city='Low Distancing')
-            sp3 = subPopulationSim(50,50,pTravel=0.01,city='')
-            sp4 = subPopulationSim(50,50,pTravel=0.01,city='Medium Distacing')
-            sp5 = subPopulationSim(50,50,pTravel=0.01,city='')
-            sp6 = subPopulationSim(50,50,pTravel=0.01,city='High Distancing')
-            
-            # sp.emptyLocation(0)
-            sp2.emptyLocation(0.15)
-            sp3.emptyLocation(0.3)
-            sp4.emptyLocation(0.45)
-            sp5.emptyLocation(0.6)
-            sp6.emptyLocation(0.75)
-            
-            sp2.randomInfection(0.002)
-            
-            sim = populationSim([sp2,sp3,sp4,sp5,sp6])
-            
-            ani = animateIndividual(sim,args.duration)
-            
-        elif args.sim==8:
-            """Many cities, to show the effects of 
-               different death probabilities
+            """Different death probabilities
                Recommended 80 days"""
             sp = subPopulationSim(100,100,pTravel=0.0,pDeath=0.002,city='Minimal Death')
             sp2 = subPopulationSim(100,100,pTravel=0.0,pDeath=0.1,city='Medium Death')
@@ -278,7 +264,7 @@ def main(*args):
             
             ani = animateIndividual(sim,args.duration)
             
-        elif args.sim==9:
+        elif args.sim==8:
             """No vaccination vs vaccinating after a period of time"""
             sp = subPopulationSim(75,75, pVaccination=0.1, startVaccination=8, 
                                   city='Vaccinate after 8 days')
