@@ -1,6 +1,32 @@
+#!/usr/bin/env python3
+
+"""
+This script was meant to be an alternative for the SIMULATION.py file, with the
+'person' class being the main improvement. However, the 'person' class proved
+to be too slow to run any meaningful simulations; only capable fo running upto 
+20x20 grids, which is why we decided not to use this version of the code.
+
+Running this file in the terminal will show a quick and basic simulation, similar
+to the one in the MAIN program; albeit with some bugs. It is just to show that
+this program works, despite us not developing it.
+
+With a faster computer, this script would've been the better option, and we
+would've improved upon it more to the same degree as the rest of the other files.
+The mainmotivation behind making this file is the 'person' class, which would 
+treat each individual grid square as a seperate object with its own unique traits
+and values, so different people would have different probabilities, and it would 
+keep track of how long a certain person has been infected for, for example.
+There was also the idea of having people move into unoccupied grid spaces, before 
+we realized the fault with this program.
+
+**Note, there is lots of unused code in this file imported from the other files.
+"""
+
+
 import numpy as np
 import numpy.random as r
 import time as t
+import argparse
 import pandas as pd
 from ANIMATION import *
 
@@ -42,10 +68,10 @@ class person:
             if self.daysInfected >= 4 :
                 if self.daysInfected <= 10:
                     self.pDeath = (self.daysInfected - 3) * 0.01
-                    self.pRecovery = (self.daysInfected - 3) * 0.01
+                    self.pRecovery = (self.daysInfected - 3) * 0.001
                     self.pQuarantine = (self.daysInfected - 3) * 0.01
                 else:
-                    self.pDeath = 0.07
+                    self.pDeath = 0.007
                     self.pRecovery = 0.07
                     self.pQuarantine = 0.07
                     
@@ -115,8 +141,8 @@ class subPopulationSim:
     def __init__(self, width=5, height=5, city='City'):
 
         self.city = city
-        # self.width = width
-        # self.height = height
+        self.width = width
+        self.height = height
 
         self.day = 0
         
@@ -153,8 +179,9 @@ class subPopulationSim:
         
         for i in self.gridState:
             for j in i:
-                j.updateProbabilities()
-                j.updateStatus()
+                if j:
+                    j.updateProbabilities()
+                    j.updateStatus()
                 
         self.moveAround
         
@@ -230,24 +257,25 @@ class subPopulationSim:
         
         for i in range(len(self.gridState)):
             for j in range(len(self.gridState[i])):
-                if self.gridState[i][j].status == 'I':
-                    if self.gridState[i][j].previouslyInfected:
-                        recovered += 'R'
-                    else:
-                        infected += 'I'
-                elif self.gridState[i][j].status == 'S':
-                    if self.gridState[i][j].previouslyInfected:
-                        recovered += 'R'
-                    else:
-                        susceptable += 'S'
-                elif self.gridState[i][j].status == 'D':
-                    dead += 'D'
-                elif self.gridState[i][j].status == 'T':
-                    travelled += 'T'
-                elif self.gridState[i][j].status == 'Q':
-                    quarantined += 'Q'
-                elif self.gridState[i][j].status == 'V':
-                    vaccinated += 'V'
+                if self.gridState[i][j]:
+                    if self.gridState[i][j].status == 'I':
+                        if self.gridState[i][j].previouslyInfected:
+                            recovered += 'R'
+                        else:
+                            infected += 'I'
+                    elif self.gridState[i][j].status == 'S':
+                        if self.gridState[i][j].previouslyInfected:
+                            recovered += 'R'
+                        else:
+                            susceptable += 'S'
+                    elif self.gridState[i][j].status == 'D':
+                        dead += 'D'
+                    elif self.gridState[i][j].status == 'T':
+                        travelled += 'T'
+                    elif self.gridState[i][j].status == 'Q':
+                        quarantined += 'Q'
+                    elif self.gridState[i][j].status == 'V':
+                        vaccinated += 'V'
 
         data = pd.DataFrame(
             [len(susceptable), len(infected), len(recovered), len(dead), len(travelled), len(quarantined),
@@ -293,46 +321,43 @@ class subPopulationSim:
         """For use in grid Animation gets a colour grid to be plotted"""
             
         colour_grid = np.zeros((self.width,self.height,3),int)
+        
         for i in range(len(self.gridState)):
           for j in range(len(self.gridState[i])):
-             if  self.gridState[i][j].status == 'S':
-                 if self.gridState[i][j].previouslyInfected:
-                     colour_grid[i][j][0]=50
-                     colour_grid[i][j][1]=50
-                     colour_grid[i][j][2]=250
-                 else:
+             if self.gridState[i][j]:
+                 
+                 if  self.gridState[i][j].status == 'S':
+                     
+                     if self.gridState[i][j].previouslyInfected:
+                        colour_grid[i][j][0]=50
+                        colour_grid[i][j][1]=50
+                        colour_grid[i][j][2]=250
+                     else:
+                        colour_grid[i][j][0]=0
+                        colour_grid[i][j][1]=255
+                        colour_grid[i][j][2]=0
+                        
+                        
+                 elif self.gridState[i][j].status == 'I':
+                        colour_grid[i][j][0]=255
+                        colour_grid[i][j][1]=0
+                        colour_grid[i][j][2]=0
+                        
+                 elif self.gridState[i][j].status == 'V':
+                   colour_grid[i][j][0]=0
+                   colour_grid[i][j][1]=0
+                   colour_grid[i][j][2]=255
+                   
+                 elif self.gridState[i][j].status == 'D':     
                     colour_grid[i][j][0]=0
-                    colour_grid[i][j][1]=255
-                    colour_grid[i][j][2]=0
-             elif self.gridState[i][j].status == 'I':
-                 # if self.gridState[i][j].previouslyInfected:
-                 #    colour_grid[i][j][0]=50
-                 #    colour_grid[i][j][1]=50
-                 #    colour_grid[i][j][2]=250
-                 # else:
-                    colour_grid[i][j][0]=255
                     colour_grid[i][j][1]=0
                     colour_grid[i][j][2]=0
-             elif self.gridState[i][j].status == 'V':
-               colour_grid[i][j][0]=0
-               colour_grid[i][j][1]=0
-               colour_grid[i][j][2]=255
-             elif self.gridState[i][j].status == 'D':     
-                colour_grid[i][j][0]=0
-                colour_grid[i][j][1]=0
-                colour_grid[i][j][2]=0
-             elif self.gridState[i][j].status == 'Q': 
-                colour_grid[i][j][0]=200
-                colour_grid[i][j][1]=50
-                colour_grid[i][j][2]=100
-             elif self.gridState[i][j].status == 'R': 
-                colour_grid[i][j][0]=50
-                colour_grid[i][j][1]=50
-                colour_grid[i][j][2]=250
-             elif self.gridState[i][j].status == 'T': 
-                colour_grid[i][j][0]=30
-                colour_grid[i][j][1]=100
-                colour_grid[i][j][2]=150
+                    
+             else: 
+                 colour_grid[i][j][0]=255
+                 colour_grid[i][j][1]=255
+                 colour_grid[i][j][2]=255
+        
         
         return(colour_grid)
     
@@ -425,15 +450,30 @@ class populationSim:
         return GridPrint
 
 
+def main(*args):
+    
+    parser = argparse.ArgumentParser(description='Animate an epidemic')
+    parser.add_argument('--file', metavar='N', type=str, default=None,
+                        help='Filename to save to instead of showing on screen')
+    args = parser.parse_args(args)
+
+    cities = []
+    for i in range(1):
+        cities.append(subPopulationSim(width=20, height=20, city=f"City {i+1}"))
+    
+    
+    for sp in cities:
+        sp.emptyLocation()
+    cities[0].randomInfection()
+    
+    sim = populationSim(cities)
+    ani = Animation(sim, 100)
+    ani.show(args.file)
 
 
 
-
-
-# x = subPopulationSim()
-# x.randomInfection()
-# for i in range(20):
-#     x.nextDay()
-#     print(x)
-# print(x.gridState[1][2].pQuarantine, x.gridState[1][2].daysInfected, x.gridState[1][2].quarantining)
-
+if __name__ == "__main__":
+    import sys
+    main(*sys.argv[1:])
+    
+    
