@@ -459,7 +459,7 @@ def main(*args):
 
     cities = []
     for i in range(1):
-        cities.append(subPopulationSim(width=20, height=20, city=f"City {i+1}"))
+        cities.append(subPopulationSim(width=20, height=20, city=''))
     
     
     for sp in cities:
@@ -468,7 +468,11 @@ def main(*args):
     
     sim = populationSim(cities)
     ani = Animation(sim, 100)
-    ani.show(args.file)
+    
+    if args.file==None:
+        ani.show()
+    else:
+        ani.save(args.file,100)
 
 
 
