@@ -296,7 +296,21 @@ def main(*args):
             ani = Animation(sim,args.duration)
             
         elif args.sim==102:
-            """Experimental case 2: high recovery rate, with slower loss of immunity,
+            """Experimental case 2: extreme recovery rate, with gradual loss of immunity,
+               and no travelling.
+               Reccomend 300 days"""
+               
+            sp = subPopulationSim(125,125,pRecovery=0.99,pReinfection=0.05,
+                                  pTravel=0,city='')
+            
+            sp.randomInfection(0.001)
+            
+            sim = populationSim([sp])
+            
+            ani = Animation(sim,args.duration)
+            
+        elif args.sim==103:
+            """Experimental case 3: high recovery rate, with slower loss of immunity,
                but also high infection rate, causing more rapid spread, 
                and with small amount of travel
                Results in an endless oscilating SIR pattern, with regular sudden outbreaks
@@ -311,28 +325,14 @@ def main(*args):
             
             ani = Animation(sim,args.duration)
             
-        elif args.sim==103:
-            """Experimental case 3: extreme recovery rate, with gradual loss of immunity,
-               and no travelling.
-               Reccomend 300 days"""
-               
-            sp = subPopulationSim(125,125,pRecovery=0.99,pReinfection=0.05,
-                                  pTravel=0,city='')
-            
-            sp.randomInfection(0.001)
-            
-            sim = populationSim([sp])
-            
-            ani = Animation(sim,args.duration)
-            
         elif args.sim==104:
             """Experimental case 4: Slow but guaranteed death. This may represent covid in
                less fortunate areas, or more likely a deadlier type of virus.
                Note the death probability is not high, but recovery is 0, so it
                simply takes a while to die
-               Recommeneded 200 days"""
+               Recommended 200 days"""
                
-            sp = subPopulationSim(100,100,pDeath=0.1,pRecovery=0,pTravel=0,city='')
+            sp = subPopulationSim(200,200,pDeath=0.1,pRecovery=0,pTravel=0,city='')
             
             sp.randomInfection(0.001)
             
